@@ -77,7 +77,7 @@ var BorderTool = {
 	},
 
 	updatePreview : function updatePreview() {
-		
+
 		var spos = [];
 
 		for (var i in this.guidelines)
@@ -116,11 +116,11 @@ var BorderTool = {
 	trackMouse : function trackMouse() {
 
 		var offsetX = this.canvas.offsetLeft;
-		var offsetY = this.canvas.offsetTop;	
+		var offsetY = this.canvas.offsetTop;
 		var state = 0;
 
 		function mouseMove(e) {
-			
+
 			var posX = e.pageX - offsetX;
 			var posY = e.pageY - offsetY;
 

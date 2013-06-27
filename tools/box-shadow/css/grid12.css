@@ -1,0 +1,93 @@
+
+/*  GRID OF TEN
+ * ========================================================================== */
+
+.span_12 {
+	width: 100%;
+}
+
+.span_11 {
+	width: 91.46%;
+}
+
+.span_10 {
+	width: 83%;
+}
+
+.span_9 {
+	width: 74.54%;
+}
+
+.span_8 {
+	width: 66.08%;
+}
+
+.span_7 {
+	width: 57.62%;
+}
+
+.span_6 {
+	width: 49.16%;
+}
+
+.span_5 {
+	width: 40.7%;
+}
+
+.span_4 {
+	width: 32.24%;
+}
+
+.span_3 {
+	width: 23.78%;
+}
+
+.span_2 {
+	width: 15.32%;
+}
+
+.span_1 {
+	width: 6.86%;
+}
+
+
+/*  SECTIONS
+ * ========================================================================== */
+
+.section {
+	clear: both;
+	padding: 0px;
+	margin: 0px;
+}
+
+/*  GROUPING
+ * ========================================================================== */
+
+
+.group:before, .group:after {
+    content: "";
+    display: table;
+}
+
+.group:after {
+    clear:both;
+}
+
+.group {
+    zoom: 1; /* For IE 6/7 (trigger hasLayout) */
+}
+
+/*  GRID COLUMN SETUP
+ * ========================================================================== */
+
+.col {
+	display: block;
+	float:left;
+	margin: 1% 0 1% 1.6%;
+	-moz-box-sizing: border-box;
+}
+
+.col:first-child {
+	margin-left: 0;
+} /* all browsers except IE6 and lower */
+

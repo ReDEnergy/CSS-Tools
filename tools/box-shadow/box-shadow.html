@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<title> Border Image Tool </title>
+	<link href="css/grid12.css" rel="stylesheet"/>
+	<link href="css/box-shadow.css" rel="stylesheet"/>
+	<script src="js/box-shadow.js"></script>
+
+</head>
+
+<body>
+
+	<div id="container">
+		<div class="description">
+			<p class="title"> CSS border-image-slice TOOL</p>
+		</div>
+
+		<div id="content" class="section group">
+			<div id="layer_manager" class="col span_2">
+				<div id="new_layer">
+					Add new shadow
+				</div>
+				<div id="subject_layer" class="layer">
+					HTML Element
+				</div>
+				<div id="shadow_stack">
+				</div>
+			</div>
+
+			<div id="preview" class="col span_10">
+				<div id="subject">
+				</div>
+			</div>
+			<div id="controls" class="col span_12">
+				<div class="group">
+					<div class="col span_6"> Blur Radius </div>
+					<input type="range" min="0" max="100" class="col span_5"/>
+				</div>
+				<div class="group">
+					<div class="col span_6"> Spread Radius </div>
+					<input type="range" min="0" max="100" class="col span_5"/>
+				</div>
+			</div>
+		</div>
+		<pre id="output" class="span_12">
+		</pre>
+	</div>
+</body>
+</html>

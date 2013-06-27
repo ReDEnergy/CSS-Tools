@@ -1,0 +1,120 @@
+/*
+ 		green		background-color: #359740;
+
+ 		blue		background: -moz-linear-gradient(top, #43A6E1 0%, #257BC2 100%);
+					background-color: #3490D2;
+
+ 		gray		background: -moz-linear-gradient(top, #9e9e9e 0%, #747474 100%);
+ 					background: -moz-linear-gradient(top, #8d8d8d 0%, #525252 100%);
+*/
+
+
+body {
+	width: 980px;
+	margin: 20px auto;
+	padding: 20px;
+
+	border: solid 1px #CCC;
+	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+
+	-moz-user-select: none;
+}
+
+#container {
+	width:100%;
+	padding: 0 20px;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+/*
+ * Preview Area
+ */
+
+#preview {
+	height: 400px;
+	position: relative;
+	border: 1px solid #43A6E1;
+	overflow : hidden;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+#subject {
+	width: 200px;
+	height: 75px;
+	position: absolute;
+	top: 20%;
+	left: 20%;
+	border: 1px solid #C60;
+	/*box-shadow: 0 0 20px black,
+  				20px 15px 30px yellow,
+  				-20px 15px 30px lime,
+  				-20px -15px 30px blue,
+  				20px -15px 30px red;*/
+  }
+
+
+/*
+ * Stack of Layers for shadow
+ */
+
+#layer_manager {
+	padding: 5px;
+	background-color: #FEFEFE;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#layer_manager #new_layer,
+#layer_manager .layer {
+	width: 100%;
+	margin: 5px 0;
+	padding:5px;
+	text-align: center;
+	background: #43A6E1;
+	font-size: 14px;
+	color: #FFF;
+	border-radius: 5px;
+	display: block;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#layer_manager #new_layer:hover {
+	background: -moz-linear-gradient(top, #43A6E1 0%, #257BC2 100%);
+	background: -webkit-linear-gradient(top, #43A6E1 0%, #257BC2 100%);
+	cursor: pointer;
+}
+
+#layer_manager .layer {
+	color: #333;
+	background-color: #E4E4E4;
+}
+
+#layer_manager .layer:hover {
+	color: #EEE;
+	background: -moz-linear-gradient(top, #D93 0%, #C60 100%);
+	background: -webkit-linear-gradient(top, #D93 0%, #C60 100%);
+	cursor: pointer;
+}
+
+#layer_manager [active="true"] {
+	color: #FFF;
+	background-color: #D82;
+}
+
