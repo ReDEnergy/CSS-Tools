@@ -42,7 +42,7 @@ body {
 	height: 400px;
 	position: relative;
 	border: 1px solid #43A6E1;
-	overflow : hidden;
+	/*overflow : hidden;*/
 
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -51,18 +51,78 @@ body {
 
 
 #subject {
-	width: 200px;
-	height: 75px;
-	position: absolute;
+	width: 300px;
+	height: 100px;
+	position: relative;
 	top: 20%;
 	left: 20%;
-	border: 1px solid #C60;
-	/*box-shadow: 0 0 20px black,
-  				20px 15px 30px yellow,
-  				-20px 15px 30px lime,
-  				-20px -15px 30px blue,
-  				20px -15px 30px red;*/
-  }
+	text-align: center;
+	border: 1px solid #CCC;
+	background: #fff;
+}
+
+
+#subject #sbefore {
+	z-index: -1;
+	position: absolute;
+	content: "";
+	left: 5px;
+	bottom: 10px;
+	height: 10%;
+	width: 48%;
+	border-radius: 10px 10px 10px 0 / 30px 30px 0 0;
+	box-shadow: 0 12px 5px 0px #777;
+	-moz-transform: rotate(-3deg);
+	-webkit-transform: rotate(-3deg);
+	transform: rotate(-3deg);
+}
+
+#subject #safter {
+	z-index: -1;
+	position: absolute;
+	content: "";
+	right: 5px;
+	bottom: 10px;
+	height: 10%;
+	width: 48%;
+	border-radius: 10px 10px 0 0 / 30px 30px 0 0;
+	box-shadow: 0px 12px 5px 0px #777;
+	-moz-transform: rotate(3deg);
+	-webkit-transform: rotate(3deg);
+	transform: rotate(3deg);
+}
+
+
+#subject #safter2 {
+	z-index: -1;
+	position: absolute;
+	content: "";
+	left: 5px;
+	top: 10px;
+	height: 10%;
+	width: 48%;
+	border-radius: 10px 10px 10px 0 / 30px 30px 0 0;
+	box-shadow: 0 -10px 5px 0px #777;
+	-moz-transform: rotate(3deg);
+	-webkit-transform: rotate(3deg);
+	transform: rotate(3deg);
+}
+
+
+#subject #sbefore2 {
+	z-index: -1;
+	position: absolute;
+	content: "";
+	right: 5px;
+	top: 10px;
+	height: 10%;
+	width: 48%;
+	border-radius: 10px 10px 10px 0 / 30px 30px 0 0;
+	box-shadow: 0 -10px 5px 0px #777;
+	-moz-transform: rotate(-3deg);
+	-webkit-transform: rotate(-3deg);
+	transform: rotate(-3deg);
+}
 
 
 /*
@@ -82,10 +142,11 @@ body {
 #layer_manager .layer {
 	width: 100%;
 	margin: 5px 0;
-	padding:5px;
+	padding: 5px;
 	text-align: center;
 	background: #43A6E1;
-	font-size: 14px;
+	font-size: 0.75em;
+	line-height: 1.5em;
 	color: #FFF;
 	border-radius: 5px;
 	display: block;
@@ -118,3 +179,21 @@ body {
 	background-color: #D82;
 }
 
+#layer_manager .delete {
+	width: 1.5em;
+	height: 1.5em;
+	float: right;
+	border-radius: 3px;
+	background-image: url("../images/delete_button.png");
+	background-position: center center;
+	background-size: 1.5em 1.5em;
+	display: none;
+}
+
+#layer_manager .delete:hover {
+	background-image: url("../images/delete_button_2.png");
+}
+
+#layer_manager .layer:hover .delete {
+	display: block;
+}
