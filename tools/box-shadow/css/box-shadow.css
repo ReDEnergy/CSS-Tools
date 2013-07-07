@@ -10,11 +10,10 @@
 
 
 body {
-	width: 980px;
-	margin: 20px auto;
-	padding: 20px;
+	width: 1024px;
+	margin: 0 auto;
+	padding: 0;
 
-	border: solid 1px #CCC;
 	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
 
 	-moz-box-sizing: border-box;
@@ -26,7 +25,6 @@ body {
 
 #container {
 	width:100%;
-	padding: 0 20px;
 
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -34,12 +32,13 @@ body {
 }
 
 
-/*
+/*8
  * Preview Area
  */
 
 #preview {
 	height: 400px;
+	padding: 0;
 	position: relative;
 	border: 1px solid #43A6E1;
 	/*overflow : hidden;*/
@@ -47,6 +46,10 @@ body {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
+}
+
+#preview:hover {
+	cursor: move;
 }
 
 
@@ -72,7 +75,7 @@ body {
 	width: 48%;
 	border-radius: 10px 10px 10px 0 / 30px 30px 0 0;
 	box-shadow: 0 12px 5px 0px #777;
-	-moz-transform: rotate(-3deg);
+	-moz-transform: rotate(357deg);
 	-webkit-transform: rotate(-3deg);
 	transform: rotate(-3deg);
 }
@@ -92,45 +95,12 @@ body {
 	transform: rotate(3deg);
 }
 
-
-#subject #safter2 {
-	z-index: -1;
-	position: absolute;
-	content: "";
-	left: 5px;
-	top: 10px;
-	height: 10%;
-	width: 48%;
-	border-radius: 10px 10px 10px 0 / 30px 30px 0 0;
-	box-shadow: 0 -10px 5px 0px #777;
-	-moz-transform: rotate(3deg);
-	-webkit-transform: rotate(3deg);
-	transform: rotate(3deg);
-}
-
-
-#subject #sbefore2 {
-	z-index: -1;
-	position: absolute;
-	content: "";
-	right: 5px;
-	top: 10px;
-	height: 10%;
-	width: 48%;
-	border-radius: 10px 10px 10px 0 / 30px 30px 0 0;
-	box-shadow: 0 -10px 5px 0px #777;
-	-moz-transform: rotate(-3deg);
-	-webkit-transform: rotate(-3deg);
-	transform: rotate(-3deg);
-}
-
-
-/*
+/**
  * Stack of Layers for shadow
  */
 
 #layer_manager {
-	padding: 5px;
+	padding: 0 0 0 10px;
 	background-color: #FEFEFE;
 
 	-moz-box-sizing: border-box;
@@ -162,6 +132,11 @@ body {
 	cursor: pointer;
 }
 
+#layer_manager #shadow_stack {
+	max-height: 260px;
+	overflow: auto;
+}
+
 #layer_manager .layer {
 	color: #333;
 	background-color: #E4E4E4;
@@ -173,6 +148,7 @@ body {
 	background: -webkit-linear-gradient(top, #D93 0%, #C60 100%);
 	cursor: pointer;
 }
+
 
 #layer_manager [active="true"] {
 	color: #FFF;
@@ -196,4 +172,155 @@ body {
 
 #layer_manager .layer:hover .delete {
 	display: block;
+}
+
+/**
+ * 	Controls
+ */
+
+#colorpicker {
+	width: 440px;
+}
+
+#colorpicker .gradient {
+	width: 200px;
+	height: 200px;
+	margin: 10px;
+	background: -moz-linear-gradient(bottom, #000 0%, rgba(0, 0, 0, 0) 100%),
+				-moz-linear-gradient(left, #FFF 0%, rgba(255, 255, 255, 0) 100%);
+	background: -webkit-linear-gradient(bottom, #000 0%, rgba(0, 0, 0, 0) 100%),
+				-webkit-linear-gradient(left, #FFF 0%, rgba(255, 255, 255, 0) 100%);
+	background-color: #F00;
+	float: left;
+}
+
+#colorpicker .hue {
+	width: 200px;
+	height: 30px;
+	margin: 10px;
+	background: -moz-linear-gradient(left, #F00 0%, #FF0 16.66%, #0F0 33.33%, #0FF 50%,
+				#00F 66.66%, #F0F 83.33%, #F00 100%);
+	background: -webkit-linear-gradient(left, #F00 0%, #FF0 16.66%, #0F0 33.33%, #0FF 50%,
+				#00F 66.66%, #F0F 83.33%, #F00 100%);
+	float: left;
+}
+
+#colorpicker .alpha {
+	width: 200px;
+	height: 30px;
+	margin: 10px;
+	float: left;
+	background-image: url("../images/alpha2.png");
+}
+
+#colorpicker #alpha {
+	width: 100%;
+	height: 100%;
+	background: -moz-linear-gradient(left, rgba(255, 0, 0, 0) 0%, rgba(255, 0, 0, 1) 100%);
+}
+/**/
+
+#colorpicker #gradient_picker {
+	width: 0.5em;
+	height: 0.5em;
+	border-radius: 0.4em;
+	border: 2px solid #CCC;
+	position: relative;
+	top: 20%;
+	left: 20%;
+}
+
+#colorpicker #hue_selector,
+#colorpicker #alpha_selector {
+	width: 2px;
+	height: 100%;
+	border-left: 1px solid #555;
+	border-right: 1px solid #555;
+	background-color: #FFF;
+	position: relative;
+	top: 0;
+	left: 0%;
+}
+
+#colorpicker #alpha_selector {
+	left: 95%;
+}
+
+#colorpicker .info {
+	width: 200px;
+	margin: 10px;
+	float: left;
+}
+
+#colorpicker #info_rgb {
+	width: 100%;
+}
+
+#colorpicker #info_hsv {
+	width: 100%;
+}
+
+#colorpicker .preview {
+	width: 200px;
+	height: 100px;
+	margin: 10px;
+	background-image: url("../images/alpha2.png");
+	float: left;
+	position: relative;
+}
+
+#colorpicker .preview:before {
+	height: 100%;
+	width: 50%;
+	left: 50%;
+	content: "";
+	background: #FFF;
+	position: absolute;
+	z-index: 1;
+}
+
+#colorpicker #output_color {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	z-index: 2;
+}
+
+/**
+ * 	controls
+ */
+
+#controls .ui-slider {
+	height: 20px;
+	display: block;
+	background: #CCC;
+}
+
+#controls .ui-slider:hover {
+	cursor: pointer;
+}
+
+#controls .ui-slider-pointer {
+	width: 2px;
+	height: 100%;
+	border-left: 1px solid #555;
+	border-right: 1px solid #555;
+	background-color: #FFF;
+	position: relative;
+	top: 0;
+	left: 0%;
+}
+
+#controls .ui-slider-set {
+	height: 20px;
+	line-height: 20px;
+	background: #82c9c4;
+	color: #FFF;
+	font-weight: bold;
+	text-align: center;
+}
+
+#controls .ui-slider-set:hover {
+	background: #379b4a;
+	cursor: pointer;
 }

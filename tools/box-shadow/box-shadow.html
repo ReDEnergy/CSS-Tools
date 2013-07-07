@@ -12,46 +12,69 @@
 
 <body>
 
-	<div id="container">
-		<div class="description">
-			<p class="title"> CSS border-image-slice TOOL</p>
+<div id="container">
+	<div class="section group">
+		<div id="layer_manager" class="col span_2">
+			<div id="subject_layer" class="layer">
+				Element
+			</div>
+			<div id="subject_before" class="layer"> : before </div>
+			<div id="subject_after" class="layer"> : after </div>
+			<div id="new_layer"> Add new shadow </div>
+			<div id="shadow_stack"> </div>
 		</div>
 
-		<div id="content" class="section group">
-			<div id="layer_manager" class="col span_2">
-				<div id="subject_layer" class="layer">
-					Element
-				</div>
-				<div id="subject_before" class="layer"> : before </div>
-				<div id="subject_after" class="layer"> : after </div>
-				<div id="new_layer"> Add new shadow </div>
-				<div id="shadow_stack">
-				</div>
+		<div id="preview" class="col span_10">
+			<div id="subject">
+				<div id="sbefore"></div>
+				<div id="safter"></div>
+				<div> Content </div>
 			</div>
 
-			<div id="preview" class="col span_10">
-				<div id="subject">
-					<div id="sbefore"></div>
-					<div id="safter"></div>
-					<div id="sbefore2"></div>
-					<div id="safter2"></div>
-					<div> Awesome content </div>
+		</div>
+		<div id="controls" class="group section">
+			<div id="colorpicker" class="group col span_6">
+				<div id="gradient" class="gradient">
+					<div id="gradient_picker"> </div>
 				</div>
-
+				<div id="hue" class="hue">
+					<div id="hue_selector"> </div>
+				</div>
+				<div class="alpha">
+					<div id="alpha">
+						<div id="alpha_selector"> </div>
+					</div>
+				</div>
+				<div class="preview">
+					<div id="output_color"></div>
+				</div>
+				<div class="info">
+					<div id="info_rgb"> </div>
+					<div id="info_hsv"> </div>
+				</div>
 			</div>
-			<div id="controls" class="col span_12">
+			<div class="group col span_6">
 				<div class="group">
-					<div class="col span_6"> Blur Radius </div>
-					<input type="range" min="0" max="100" class="col span_5"/>
+					<div class="col span_3"> Blur Radius </div>
+					<div class="col span_1 ui-slider-set" data-topic="blur" data-type="sub">-</div>
+					<div id="blur" class="col span_6 ui-slider" data-min="0"
+						data-max="100" data-step="5"> </div>
+					<div class="col span_1 ui-slider-set" data-topic="blur" data-type="add">+</div>
+					<div class="col span_1 ui-slider-get" data-topic="blur"></div>
 				</div>
 				<div class="group">
-					<div class="col span_6"> Spread Radius </div>
-					<input type="range" min="0" max="100" class="col span_5"/>
+					<div class="col span_3"> Spread Radius </div>
+					<div class="col span_1 ui-slider-set" data-topic="spread" data-type="sub">-</div>
+					<div id="spread" class="col span_6 ui-slider" data-min="-100"
+						data-max="100" data-step="5" data-value="50">
+					</div>
+					<div class="col span_1 ui-slider-set" data-topic="spread" data-type="add">+</div>
+					<div class="col span_1 ui-slider-get" data-topic="spread"></div>
 				</div>
 			</div>
 		</div>
-		<pre id="output" class="span_12">
-		</pre>
 	</div>
+	<pre id="output" class="span_6"> </pre>
+</div>
 </body>
 </html>
