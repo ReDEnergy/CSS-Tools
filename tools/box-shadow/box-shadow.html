@@ -15,20 +15,19 @@
 <div id="container">
 	<div class="section group">
 		<div id="layer_manager" class="col span_2">
-			<div id="subject_layer" class="layer">
-				Element
+			<div class="node" id="lm-elem" data-type="subject" data-title="element"> element </div>
+			<div class="node" id="lm-before" data-type="subject" data-title=":before"> : before </div>
+			<div class="node" id="lm-after" data-type="subject" data-title=":after"> : after </div>
+			<div id="stack_container">
 			</div>
-			<div id="subject_before" class="layer"> : before </div>
-			<div id="subject_after" class="layer"> : after </div>
-			<div id="new_layer"> Add new shadow </div>
-			<div id="shadow_stack"> </div>
+			<div class="node" data-type="add"> Add shadow </div>
 		</div>
 
 		<div id="preview" class="col span_10">
-			<div id="subject">
-				<div id="sbefore"></div>
-				<div id="safter"></div>
-				<div> Content </div>
+			<div id="obj-lm-elem">
+				<div id="obj-lm-before"> </div>
+				<div id="obj-lm-after"> </div>
+				<div> content </div>
 			</div>
 
 		</div>
@@ -46,30 +45,85 @@
 					</div>
 				</div>
 				<div class="preview">
-					<div id="output_color"></div>
+					<div id="output_color"> </div>
 				</div>
 				<div class="info">
 					<div id="info_rgb"> </div>
 					<div id="info_hsv"> </div>
+					<div id="info_hexa"> </div>
 				</div>
 			</div>
 			<div class="group col span_6">
 				<div class="group">
-					<div class="col span_3"> Blur Radius </div>
+					<div class="col span_12">
+						<input id="sw_inset" type="checkbox"/>
+						<label for="sw_inset">Inset</label>
+						<input id="sw_after" type="checkbox"/>
+						<label for="sw_after">Display :after</label>
+						<input id="sw_before" type="checkbox"/>
+						<label for="sw_before">Display :before</label>
+					</div>
+				</div>
+
+				<div class="group">
+					<div class="col span_3"> Position X </div>
+					<div class="col span_1 ui-slider-set" data-topic="posX" data-type="sub">-</div>
+					<div class="col span_6 ui-slider" data-topic="posX"
+						data-min="-500" data-max="500" data-step="1"> </div>
+					<div class="col span_1 ui-slider-set" data-topic="posX" data-type="add">+</div>
+					<div class="col span_1 ui-slider-get" data-topic="posX"></div>
+				</div>
+				<div class="group">
+					<div class="col span_3"> Position y </div>
+					<div class="col span_1 ui-slider-set" data-topic="posY" data-type="sub">-</div>
+					<div class="col span_6 ui-slider" data-topic="posY"
+						data-min="-500" data-max="500" data-step="1"> </div>
+					<div class="col span_1 ui-slider-set" data-topic="posY" data-type="add">+</div>
+					<div class="col span_1 ui-slider-get" data-topic="posY"></div>
+				</div>
+				<div class="group">
+					<div class="col span_3"> Blur </div>
 					<div class="col span_1 ui-slider-set" data-topic="blur" data-type="sub">-</div>
-					<div id="blur" class="col span_6 ui-slider" data-min="0"
-						data-max="100" data-step="5"> </div>
+					<div class="col span_6 ui-slider" data-topic="blur"
+						data-min="0" data-max="120" data-step="1"> </div>
 					<div class="col span_1 ui-slider-set" data-topic="blur" data-type="add">+</div>
 					<div class="col span_1 ui-slider-get" data-topic="blur"></div>
 				</div>
 				<div class="group">
-					<div class="col span_3"> Spread Radius </div>
+					<div class="col span_3"> Spread </div>
 					<div class="col span_1 ui-slider-set" data-topic="spread" data-type="sub">-</div>
-					<div id="spread" class="col span_6 ui-slider" data-min="-100"
-						data-max="100" data-step="5" data-value="50">
+					<div class="col span_6 ui-slider" data-topic="spread"
+						data-min="-100"	data-max="100" data-step="1" data-value="50">
 					</div>
 					<div class="col span_1 ui-slider-set" data-topic="spread" data-type="add">+</div>
 					<div class="col span_1 ui-slider-get" data-topic="spread"></div>
+				</div>
+				<div class="group">
+					<div class="col span_3"> Rotate </div>
+					<div class="col span_1 ui-slider-set" data-topic="rotate" data-type="sub">-</div>
+					<div class="col span_6 ui-slider" data-topic="rotate"
+						data-min="-360" data-max="360" data-step="1" data-value="0">
+					</div>
+					<div class="col span_1 ui-slider-set" data-topic="rotate" data-type="add">+</div>
+					<div class="col span_1 ui-slider-get" data-topic="rotate"></div>
+				</div>
+				<div class="group">
+					<div class="col span_3"> Width </div>
+					<div class="col span_1 ui-slider-set" data-topic="width" data-type="sub">-</div>
+					<div class="col span_6 ui-slider" data-topic="width"
+						data-min="0" data-max="400" data-step="1" data-value="200">
+					</div>
+					<div class="col span_1 ui-slider-set" data-topic="width" data-type="add">+</div>
+					<div class="col span_1 ui-slider-get" data-topic="width"></div>
+				</div>
+				<div class="group">
+					<div class="col span_3"> Height </div>
+					<div class="col span_1 ui-slider-set" data-topic="height" data-type="sub">-</div>
+					<div class="col span_6 ui-slider" data-topic="height"
+						data-min="0" data-max="400" data-step="1" data-value="200">
+					</div>
+					<div class="col span_1 ui-slider-set" data-topic="height" data-type="add">+</div>
+					<div class="col span_1 ui-slider-get" data-topic="height"></div>
 				</div>
 			</div>
 		</div>
