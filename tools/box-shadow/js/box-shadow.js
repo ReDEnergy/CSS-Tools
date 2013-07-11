@@ -10,62 +10,6 @@ var BoxShadow = (function BoxShadow() {
 		return document.getElementById(id);
 	}
 
-	var subject;
-	var preview;
-	var SubjectObj = {
-		posX : 0,
-		posY : 0
-	}
-
-	SubjectObj.center = function center() {
-		SubjectObj.posX = ((preview.clientWidth - subject.clientWidth) / 2) | 0;
-		SubjectObj.posY = ((preview.clientHeight - subject.clientHeight) / 2) | 0;
-
-		subject.style.top = SubjectObj.posY + "px";
-		subject.style.left = SubjectObj.posX + "px";
-	}
-
-/*
-	var Observer = (function Observer() {
-		var topics = [];
-		var subscribers = [];
-
-
-		var publish = function publish(topic, data) {
-
-		}
-
-		var subscribe = function subscribe(topic, callback) {
-			subscribers[topic].push(callback);
-		}
-
-		var unsubscribe = function unsubscribe(topic, callback) {
-			subscribers[topic].indexOf(callback);
-			subscribers[topic].splice(index, 1);
-		}
-
-		var notify = function notify() {
-			for (var i in subscribers[this.topic]) {
-				subscribers[this.topic][i](this.value);
-			}
-		}
-
-		var init = function init() {
-			var sla = document.querySelectorAll('.ui-slider');
-			var size = sla.length;
-			for (var i = 0; i < size; i++)
-				new Slider(sla[i]);
-		}
-
-		return {
-			init : init,
-			setValue : setValue,
-			subscribe : subscribe,
-			unsubscribe : unsubscribe
-		}
-	})()
-*/
-
 	/**
 	 * RGBA Color class
 	 */
@@ -145,8 +89,8 @@ var BoxShadow = (function BoxShadow() {
 		var green	= this.g / 255;
 		var blue	= this.b / 255;
 
-		var cmax = Math.max(red, Math.max(green, blue));
-		var cmin = Math.min(red, Math.min(green, blue));
+		var cmax = Math.max(red, green, blue);
+		var cmin = Math.min(red, green, blue);
 		var delta = cmax - cmin;
 		var hue = 0;
 		var saturation = 0;
@@ -177,7 +121,7 @@ var BoxShadow = (function BoxShadow() {
 		if (this.g < 16) g = '0' + g;
 		if (this.b < 16) b = '0' + b;
 		var value = '#' + r + g + b;
-		return value;
+		return value.toUpperCase();
 	}
 
 	Color.prototype.getRGBA = function getRGBA() {
@@ -210,7 +154,7 @@ var BoxShadow = (function BoxShadow() {
 		this.blur   = 10;
 		this.spread = 0;
 		this.color  = new Color();
-		this.color.setHSV(0, 50, 50, 1);
+		this.color.setHSV(180, 10, 90, 1);
 	}
 
 	Shadow.prototype.computeCSS = function computeCSS() {
@@ -224,6 +168,10 @@ var BoxShadow = (function BoxShadow() {
 		value += this.color.getColor();
 
 		return value;
+	}
+
+	Shadow.prototype.toggleInset = function toggleInset() {
+		this.inset = this.inset === true ? false : true;
 	}
 
 	Shadow.prototype.copy = function copy(obj) {
@@ -241,51 +189,6 @@ var BoxShadow = (function BoxShadow() {
 	}
 
 	/**
-	 * Shadow dragging
-	 */
-	var PreviewMouseTracking = (function Drag() {
-		var active = false;
-		var lastX = 0;
-		var lastY = 0;
-
-		var init = function init() {
-			preview.addEventListener('mousedown', dragStart, false);
-			document.addEventListener('mouseup', dragEnd, false);
-		}
-
-		var dragStart = function dragStart(e) {
-			if (e.button !== 0)
-				return;
-
-			active = true;
-			lastX = e.clientX;
-			lastY = e.clientY;
-			document.addEventListener('mousemove', mouseDrag, false);
-		}
-
-		var dragEnd = function dragEnd(e) {
-			if (e.button !== 0)
-				return;
-
-			if (active === true) {
-				active = false;
-				document.removeEventListener('mousemove', mouseDrag, false);
-			}
-		}
-
-		var mouseDrag = function mouseDrag(e) {
-			Tool.updateActivePos(e.clientX - lastX, e.clientY - lastY);
-			lastX = e.clientX;
-			lastY = e.clientY;
-		}
-
-		return {
-			init : init
-		}
-
-	})();
-
-	/**
 	 * Color Picker
 	 */
 	var ColoPicker = (function ColoPicker() {
@@ -300,6 +203,7 @@ var BoxShadow = (function BoxShadow() {
 		var pick_object;
 		var info_rgb;
 		var info_hsv;
+		var info_hexa;
 		var output_color;
 		var color = new Color();
 		var subscribers = [];
@@ -389,7 +293,7 @@ var BoxShadow = (function BoxShadow() {
 
 			// Set color pointer location
 			size = gradient_area.clientWidth;
-			offset = gradient_picker.clientWidth / 2 + 2;
+			offset = gradient_picker.clientWidth / 2;
 
 			x = (color.saturation * size / 100) | 0;
 			y = size - (color.value * size / 100) | 0;
@@ -399,13 +303,13 @@ var BoxShadow = (function BoxShadow() {
 
 			// Set hue pointer location
 			size = hue_area.clientWidth;
-			offset = hue_selector.clientWidth/2 + 2;
+			offset = hue_selector.clientWidth/2;
 			x = (color.hue * size / 360 ) | 0;
 			hue_selector.style.left = x - offset + "px";
 
 			// Set alpha pointer location
 			size = alpha_area.clientWidth;
-			offset = alpha_selector.clientWidth/2 + 2;
+			offset = alpha_selector.clientWidth/2;
 			x = (color.a * size) | 0;
 			alpha_selector.style.left = x - offset + "px";
 
@@ -428,17 +332,8 @@ var BoxShadow = (function BoxShadow() {
 			// Update color info
 			info_rgb.textContent = color.getRGBA();
 			info_hsv.textContent = "HSV " + color.hue + " " + color.saturation + " " + color.value;
+			info_hexa.textContent = color.getHexa();
 			output_color.style.backgroundColor = color.getRGBA();
-		}
-
-		var setColor = function setColor(obj) {
-			if(obj instanceof Color !== true) {
-			console.log("Typeof instance not Color");
-				return;
-			}
-
-			color.copy(obj);
-			updateUI();
 		}
 
 		var setMouseTracking = function setMouseTracking(elem, callback) {
@@ -451,6 +346,19 @@ var BoxShadow = (function BoxShadow() {
 			document.addEventListener("mouseup", function(e) {
 				document.removeEventListener("mousemove", callback);
 			});
+		}
+
+		/*
+		 * Observer
+		 */
+		var setColor = function setColor(obj) {
+			if(obj instanceof Color !== true) {
+			console.log("Typeof instance not Color");
+				return;
+			}
+
+			color.copy(obj);
+			updateUI();
 		}
 
 		var subscribe = function subscribe(callback) {
@@ -477,6 +385,7 @@ var BoxShadow = (function BoxShadow() {
 			alpha_selector	= getElemById("alpha_selector");
 			info_rgb		= getElemById("info_rgb");
 			info_hsv		= getElemById("info_hsv");
+			info_hexa		= getElemById("info_hexa");
 			output_color	= getElemById("output_color");
 
 			setMouseTracking(gradient_area, updateColor);
@@ -496,150 +405,368 @@ var BoxShadow = (function BoxShadow() {
 	})();
 
 	/**
+	 * Shadow dragging
+	 */
+	var PreviewMouseTracking = (function Drag() {
+		var active = false;
+		var lastX = 0;
+		var lastY = 0;
+		var subscribers = [];
+
+		var init = function init(id) {
+			var elem = getElemById(id);
+			elem.addEventListener('mousedown', dragStart, false);
+			document.addEventListener('mouseup', dragEnd, false);
+		}
+
+		var dragStart = function dragStart(e) {
+			if (e.button !== 0)
+				return;
+
+			active = true;
+			lastX = e.clientX;
+			lastY = e.clientY;
+			document.addEventListener('mousemove', mouseDrag, false);
+		}
+
+		var dragEnd = function dragEnd(e) {
+			if (e.button !== 0)
+				return;
+
+			if (active === true) {
+				active = false;
+				document.removeEventListener('mousemove', mouseDrag, false);
+			}
+		}
+
+		var mouseDrag = function mouseDrag(e) {
+			notify(e.clientX - lastX, e.clientY - lastY);
+			lastX = e.clientX;
+			lastY = e.clientY;
+		}
+
+		var subscribe = function subscribe(callback) {
+			subscribers.push(callback);
+		}
+
+		var unsubscribe = function unsubscribe(callback) {
+			subscribers.indexOf(callback);
+			subscribers.splice(index, 1);
+		}
+
+		var notify = function notify(deltaX, deltaY) {
+			for (var i in subscribers)
+				subscribers[i](deltaX, deltaY);
+		}
+
+		return {
+			init : init,
+			subscribe : subscribe,
+			unsubscribe : unsubscribe
+		}
+
+	})();
+
+	/*
+	 * Element Class
+	 */
+	var CssClass = function CssClass(id) {
+		this.posX = 0;
+		this.posY = 0;
+		this.rotate = 0;
+		this.width = 200;
+		this.height = 100;
+		this.display = true;
+		this.bgcolor = new Color();
+		this.id = id;
+		this.node = getElemById('obj-' + id);
+		this.shadowID = null;
+		this.shadows = []
+		this.render = [];
+	}
+
+	CssClass.prototype.center = function center() {
+		this.posX = ((this.node.parentNode.clientWidth - this.node.clientWidth) / 2) | 0;
+		this.posY = ((this.node.parentNode.clientHeight - this.node.clientHeight) / 2) | 0;
+
+		this.node.style.top = this.posY + "px";
+		this.node.style.left = this.posX + "px";
+	}
+
+	CssClass.prototype.updatePos = function updatePos(deltaX, deltaY) {
+		this.posX += deltaX;
+		this.posY += deltaY;
+		this.node.style.top = this.posY + "px";
+		this.node.style.left = this.posX + "px";
+	}
+
+	CssClass.prototype.setPosX = function setPosX(value) {
+		this.posX = value;
+		this.node.style.left = this.posX + "px";
+	}
+
+	CssClass.prototype.setPosY = function setPosY(value) {
+		this.posY = value;
+		this.node.style.left = this.posY + "px";
+	}
+
+	CssClass.prototype.setWidth = function setWidth(value) {
+		this.width = value;
+		this.node.style.width = this.width + "px";
+	}
+
+	CssClass.prototype.setHeight = function setHeight(value) {
+		this.height = value;
+		this.node.style.height = this.height + "px";
+	}
+
+	CssClass.prototype.setRotate = function setRotate(value) {
+		this.rotate = value;
+		this.node.style.transform = 'rotate(' + value +'deg)';
+	}
+
+	CssClass.prototype.toggleDisplay = function toggleDisplay(value) {
+		if (value === undefined || typeof value !== "boolean" || this.display === value)
+			return;
+
+		this.display = value;
+		var display = this.display === true ? "block" : "none";
+		this.node.style.display = display;
+		getElemById(this.id).style.display = display;
+	}
+
+	CssClass.prototype.updateBgColor = function updateBgColor(color) {
+		this.bgcolor.copy(color);
+		this.node.style.backgroundColor = color.getColor();
+	}
+
+
+	/**
 	 * Tool Manager
 	 */
 	var Tool = (function Tool() {
-		var shadowID = null;
-		var shadows = [];
-		var render = [];
+
+		var preview;
+		var classes = [];
 		var active = null;
 		var output;
 
+		/*
+		 * Toll actions
+		 */
+		var addCssClass = function addCssClass(id) {
+			classes[id] = new CssClass(id);
+			classes[id].center();
+		}
+
+		var setActiveClass = function setActiveClass(id) {
+			active = classes[id];
+			active.shadowID = null;
+			ColoPicker.setColor(classes[id].bgcolor);
+			SliderManager.setValue("rotate", active.rotate);
+			SliderManager.setValue("width", active.width);
+			SliderManager.setValue("height", active.height);
+		}
+
 		var addShadow = function addShadow() {
-			var length = shadows.push(new Shadow());
+			var length = active.shadows.push(new Shadow());
 			setActiveShadow(length - 1);
 			update();
 		}
 
-		var setActiveShadow = function setActiveShadow(id) {
-			if (shadowID === id)
-				return;
-
-			shadowID = id;
-			ColoPicker.setColor(shadows[id].color);
-			SliderManager.setValue("blur", shadows[id].blur);
-			SliderManager.setValue("spread", shadows[id].spread);
-			addGlowEffect(id);
-		}
-
-		var setActiveObject =  function setActiveObject(item) {
-			shadowID = null;
-			if (item === 0)
-				active = subject;
-		}
-
-		var updateActivePos = function updateActivePos(deltaX, deltaY) {
-			if (shadowID === null)
-				updateObjPos(deltaX, deltaY);
-			else
-				updateShadowPos(deltaX, deltaY);
-		}
-
-		var renderShadow = function renderShadow(id) {
-			render[id] = shadows[id].computeCSS();
-		}
-
-		var updateShadowPos = function updateShadowPos(deltaX, deltaY) {
-			shadows[shadowID].posX += deltaX;
-			shadows[shadowID].posY += deltaY;
-			renderShadow(shadowID);
-			update();
-		}
-
-		var updateShadowBlur = function updateShadowBlur(value) {
-			if (shadowID === null)
-				return;
-			shadows[shadowID].blur = value;
-			renderShadow(shadowID);
-			update();
-		}
-
-		var updateShadowSpread = function updateShadowSpread(value) {
-			if (shadowID === null)
-				return;
-			shadows[shadowID].spread = value;
-			renderShadow(shadowID);
-			update();
-		}
-
-		var updateColor = function updateColor(color) {
-			if (shadowID === null) {
-				subject.style.backgroundColor = color.getColor();
-				return;
-			}
-
-			shadows[shadowID].color.copy(color);
-			renderShadow(shadowID);
-			update();
-		}
-
-		var updateObjPos = function updateObjPos(deltaX, deltaY) {
-			SubjectObj.posX += deltaX;
-			SubjectObj.posY += deltaY;
-			subject.style.top = SubjectObj.posY + "px";
-			subject.style.left = SubjectObj.posX + "px";
-		}
-
-		var update = function update() {
-			var outputCSS = [];
-			for (var i in render)
-				if (render[i])
-					outputCSS.push(render[i]);
-			output.textContent = outputCSS.join(", \n");
-
-			subject.style.boxShadow = outputCSS.join(", ");
-		}
-
 		var deleteShadow = function deleteShadow(id) {
-			delete shadows[id];
-			delete render[id];
-			if (shadowID === id)
-				active = subject;
+			delete active.shadows[id];
+			delete active.render[id];
 			update();
 		}
 
 		var addGlowEffect = function addGlowEffect(id) {
 
 			var store = new Shadow();
-			store.copy(shadows[id]);
-			shadows[id].color.setRGBA(40, 125, 200, 1);
-			shadows[id].blur = 10;
-			shadows[id].spread = 10;
+			store.copy(active.shadows[id]);
+			active.shadows[id].color.setRGBA(40, 125, 200, 1);
+			active.shadows[id].blur = 10;
+			active.shadows[id].spread = 10;
 
-			subject.style.transition = "box-shadow 0.2s";
-			renderShadow(id);
+			active.node.style.transition = "box-shadow 0.2s";
+			updateShadowCSS(id);
 			update();
 
 			setTimeout(function() {
-				shadows[id].copy(store);
-				renderShadow(id);
+				active.shadows[id].copy(store);
+				updateShadowCSS(id);
 				update();
 				setTimeout(function() {
-					subject.style.removeProperty("transition");
+					active.node.style.removeProperty("transition");
 				}, 100);
 			}, 200);
+		}
 
+		var setActiveShadow = function setActiveShadow(id) {
+			if (active.shadowID === id)
+				return;
+
+			active.shadowID = id;
+			ColoPicker.setColor(active.shadows[id].color);
+			SliderManager.setValue("blur", active.shadows[id].blur);
+			SliderManager.setValue("spread", active.shadows[id].spread);
+			SliderManager.setValue("posX", active.shadows[id].posX);
+			SliderManager.setValue("posY", active.shadows[id].posY);
+
+			addGlowEffect(id);
+		}
+
+		var updateActivePos = function updateActivePos(deltaX, deltaY) {
+			if (active.shadowID === null)
+				active.updatePos(deltaX, deltaY);
+			else
+				updateShadowPos(deltaX, deltaY);
+		}
+
+		var setActivePosX = function setActivePosX(value) {
+			if (active.shadowID === null)
+				active.setPosX(value);
+			else
+				setShadowPosX(value);
+		}
+
+		var setActivePosY = function setActivePosY(value) {
+			if (active.shadowID === null)
+				active.setPosY(value);
+			else
+				setShadowPosY(value);
+		}
+
+		/*
+		 * Shadow properties
+		 */
+		var updateShadowCSS = function updateShadowCSS(id) {
+			active.render[id] = active.shadows[id].computeCSS();
+		}
+
+		var toggleShadowInset = function toggleShadowInset() {
+			if (active.shadowID === null)
+				return;
+			active.shadows[active.shadowID].toggleInset();
+			updateShadowCSS(active.shadowID);
+			update();
+		}
+
+		var updateShadowPos = function updateShadowPos(deltaX, deltaY) {
+			var shadow = active.shadows[active.shadowID];
+			shadow.posX += deltaX;
+			shadow.posY += deltaY;
+			SliderManager.setValue("posX", shadow.posX);
+			SliderManager.setValue("posY", shadow.posY);
+			updateShadowCSS(active.shadowID);
+			update();
+		}
+
+		var setShadowPosX = function setShadowPosX(value) {
+			if (active.shadowID === null)
+				return;
+			active.shadows[active.shadowID].posX = value;
+			updateShadowCSS(active.shadowID);
+			update();
+		}
+
+		var setShadowPosY = function setShadowPosY(value) {
+			if (active.shadowID === null)
+				return;
+			active.shadows[active.shadowID].posY = value;
+			updateShadowCSS(active.shadowID);
+			update();
+		}
+
+		var setShadowBlur = function setShadowBlur(value) {
+			if (active.shadowID === null)
+				return;
+			active.shadows[active.shadowID].blur = value;
+			updateShadowCSS(active.shadowID);
+			update();
+		}
+
+		var setShadowSpread = function setShadowSpread(value) {
+			if (active.shadowID === null)
+				return;
+			active.shadows[active.shadowID].spread = value;
+			updateShadowCSS(active.shadowID);
+			update();
+		}
+
+		var updateShadowColor = function updateShadowColor(color) {
+			active.shadows[active.shadowID].color.copy(color);
+			updateShadowCSS(active.shadowID);
+			update();
+		}
+
+		/*
+		 * Element Properties
+		 */
+
+
+		var updateColor = function updateColor(color) {
+			if (active.shadowID === null)
+				active.updateBgColor(color);
+			else
+				updateShadowColor(color);
+		}
+
+		var update = function update() {
+			var outputCSS = [];
+			for (var i in active.render)
+				if (active.render[i])
+					outputCSS.push(active.render[i]);
+			output.textContent = outputCSS.join(", \n");
+
+			active.node.style.boxShadow = outputCSS.join(", ");
 		}
 
 		var init = function init() {
-			subject = getElemById("subject");
 			preview = getElemById("preview");
 			output  = getElemById("output");
 
-			SubjectObj.center();
 			ColoPicker.subscribe(updateColor);
-			SliderManager.subscribe("blur", updateShadowBlur);
-			SliderManager.subscribe("spread", updateShadowSpread);
+			PreviewMouseTracking.subscribe(updateActivePos);
+			SliderManager.subscribe("posX", setActivePosX);
+			SliderManager.subscribe("posY", setActivePosY);
+			SliderManager.subscribe("blur", setShadowBlur);
+			SliderManager.subscribe("spread", setShadowSpread);
+			SliderManager.subscribe("rotate", function(value){
+				active.setRotate(value)
+			});
+			SliderManager.subscribe("width", function(value){
+				active.setWidth(value)
+			});
+			SliderManager.subscribe("height", function(value){
+				active.setHeight(value)
+			});
+
+
+			classes['lm-before'].toggleDisplay(false);
+			classes['lm-after'].toggleDisplay(false);
+
+			var inset =  document.getElementById("sw_inset");
+			var after =  document.getElementById("sw_after");
+			var before =  document.getElementById("sw_before");
+
+			inset.addEventListener("change", toggleShadowInset);
+			before.addEventListener("change", function(e) {
+				classes['lm-before'].toggleDisplay(e.target.checked);
+			});
+			after.addEventListener("change", function(e) {
+				classes['lm-after'].toggleDisplay(e.target.checked);
+			});
 		}
 
 		return {
-			init : init,
-			addShadow : addShadow,
-			updateColor : updateColor,
-			updateActivePos : updateActivePos,
+			init 			: init,
+			addShadow		: addShadow,
+			addCssClass		: addCssClass,
+			deleteShadow	: deleteShadow,
+			setActiveClass	: setActiveClass,
 			setActiveShadow : setActiveShadow,
-			setActiveObject : setActiveObject,
-			deleteShadow : deleteShadow
+			updateActivePos : updateActivePos
 		}
 
 	})();
@@ -648,118 +775,206 @@ var BoxShadow = (function BoxShadow() {
 	 * Layer Manager
 	 */
 	var LayerManager = (function LayerManager() {
-		var layer_ID = 0;
-		var activeLayer = null;
-		var nr = 0;
-		var order = [];
-		var stack;
-		var add_btn;
-		var Subject = {
-			before : null,
-			after : null,
-			elem : null
+		var layerManager;
+		var container;
+		var stacks = [];
+		var active = {
+			node : null,
+			stack : null
 		}
 
-		var activateSubject = function activateSubject() {
-			switchActiveLayerTo(Subject.elem);
-			Tool.setActiveObject(0);
-		}
+		var mouseEvents = function mouseEvents(e) {
+			var node = e.target;
+			var type = node.getAttribute('data-type');
+			console.log('Action TYPE:', type);
 
-		var clickShadowStack = function clickShadowStack(e) {
-			if (e.target.className === "layer") {
-				switchActiveLayerTo(e.target);
-
-				var shadow_ID = e.target.getAttribute("sid") | 0;
-				layer_ID = order.indexOf(shadow_ID);
-
-				Tool.setActiveShadow(shadow_ID);
+			if (type === 'subject') {
+				setActiveStack(stacks[node.id]);
 			}
 
-			if (e.target.className === "delete") {
-				var layer = e.target.parentNode;
-				var shadow_ID = layer.getAttribute("sid") | 0;
-				var index = order.indexOf(shadow_ID);
+			if (type === 'add')
+				active.stack.addLayer();
 
-				order.splice(index, 1);
-				stack.removeChild(layer);
-				Tool.deleteShadow(shadow_ID);
-				if (activeLayer === layer)
-					activateSubject();
-			}
+			if (type === 'layer')
+				active.stack.setActiveLayer(node);
+
+			if (type === 'delete')
+				active.stack.deleteLayer(node.parentNode);
 		}
 
-		var getActiveNodeLayer = function getActiveNodeLayer() {
-			if(stack.childElementCount === 0)
-				return null;
-
-			return stack.children[layer_ID];
+		var setActiveStack = function setActiveStack(stackObj) {
+			active.stack.hide();
+			active.stack = stackObj;
+			active.stack.show();
 		}
 
-		var switchActiveLayerTo = function switchActiveLayerTo(node) {
-			if (activeLayer !== null)
-				activeLayer.removeAttribute("active");
+		/*
+		 * Stack object
+		 */
+		var Stack = function Stack(parent) {
+			var S = document.createElement('div');
+			var title = document.createElement('div');
+			var stack = document.createElement('div');
 
-			activeLayer = node;
-			activeLayer.setAttribute("active", "true");
+			S.className = 'container';
+			stack.className = 'stack';
+			title.className = 'title';
+			title.textContent = parent.getAttribute('data-title');
+			S.appendChild(title);
+			S.appendChild(stack);
+
+			this.id = parent.id;
+			this.container = S;
+			this.stack = stack;
+			this.parent = parent;
+			this.order = [];
+			this.count = 0;
+			this.layer = null;
+			this.layerID = 0;
 		}
 
-		var addLayer = function addLayer() {
-			var layer = createLayer();
-			switchActiveLayerTo(layer);
+		Stack.prototype.addLayer = function addLayer() {
+			var uid = this.getUID();
+			var layer = this.createLayer(uid);
+			this.stack.insertBefore(layer, this.layer);
+			this.order.splice(this.layerID, 0, uid);
 			Tool.addShadow();
-			stack.insertBefore(layer, getActiveNodeLayer());
-			order.splice(layer_ID, 0, nr++);
+			this.setActiveLayer(layer);
 		}
 
-		var createLayer = function createLayer() {
-			var elem = document.createElement("div");
-			var del = document.createElement("span");
-			elem.className = 'layer';
-			elem.setAttribute('sid', nr);
-			elem.textContent = 'shadow ' + nr;
+		Stack.prototype.createLayer = function createLayer(uid) {
+			var layer = document.createElement('div');
+			var del = document.createElement('span');
+
+			layer.className = 'node';
+			layer.setAttribute('data-shid', uid);
+			layer.setAttribute('data-type', 'layer');
+			layer.textContent = 'shadow ' + uid;
+
 			del.className = 'delete';
-			elem.appendChild(del);
-			return elem;
+			del.setAttribute('data-type', 'delete');
+
+			layer.appendChild(del);
+			return layer;
 		}
 
-		var dragEvent = function dragEvent(e) {
-			if (e.target.className === "layer") {
-				document.addEventListener("mousemove", drag);
-				document.addEventListener("mouseup", dragEnd);
+		Stack.prototype.getUID = function getUID() {
+			return this.count++;
+		}
+
+		Stack.prototype.deleteLayer = function deleteLayer(node) {
+			var same = false;
+			if (this.layer === node) {
+				same = true;
+				this.layer = null;
 			}
+
+			var shadowID =  node.getAttribute('data-shid') | 0;
+			var index = this.order.indexOf(shadowID);
+			this.stack.removeChild(this.stack.children[index]);
+			this.order.splice(index, 1);
+
+			if (index < this.layerID)
+				this.layerID--;
+
+			if (same && this.stack.children.length >= 1) {
+				this.layer = this.stack.children[0];
+				this.layerID = 0;
+			}
+
+			if (same)
+				this.show();
+
+			Tool.deleteShadow(shadowID);
+			console.log(this);
 		}
 
-		var dragStart = function dragStart(e) {
+		Stack.prototype.setActiveLayer = function setActiveLayer(node) {
+			if (this.layer)
+				this.layer.removeAttribute('data-active');
 
+			this.layer = node;
+			this.layer.setAttribute('data-active', 'layer');
+
+			var shadowID =  node.getAttribute('data-shid') | 0;
+			this.layerID = this.order.indexOf(shadowID);
+			Tool.setActiveShadow(shadowID);
 		}
 
-		var dragEnd = function dragEnd(e) {
-			document.removeEventListener("mousemove", drag);
+		Stack.prototype.unsetActiveLayer = function unsetActiveLayer() {
+			if (this.layer)
+				this.layer.removeAttribute('data-active');
+
+			if (this.stack.children.length >= 1)
+				this.layer = this.stack.children[0];
+			else
+				this.layer = null;
+
+			this.layerID = 0;
 		}
 
-		var drag = function drag(e) {
+		Stack.prototype.hide = function hide() {
+			this.unsetActiveLayer();
+			this.parent.removeAttribute('data-active');
+			var style = this.container.style;
+			style.left = '100%';
+			style.zIndex = '0';
+		}
 
+		Stack.prototype.show = function show() {
+			this.parent.setAttribute('data-active', 'subject');
+			var style = this.container.style;
+			style.left = '0';
+			style.zIndex = '10';
+			Tool.setActiveClass(this.id);
 		}
 
 		function init() {
-			Subject.elem = getElemById("subject_layer");
-			Subject.before = getElemById("subject_before");
-			Subject.after = getElemById("subject_after");
 
-			stack = getElemById("shadow_stack");
+			var elem, size;
+			layerManager = getElemById("layer_manager");
+			container = getElemById("stack_container");
 
-			add_btn = getElemById("new_layer");
+			elem = document.querySelectorAll('[data-type="subject"]');
+			size = elem.length;
 
-			add_btn.addEventListener("click", addLayer);
-			stack.addEventListener("click", clickShadowStack);
-			stack.addEventListener("mousedown", dragEvent);
-			Subject.elem.addEventListener("click", activateSubject);
+			for (var i = 0; i < size; i++) {
+				var S = new Stack(elem[i]);
+				stacks[elem[i].id] = S;
+				container.appendChild(S.container);
+				Tool.addCssClass(elem[i].id);
+			}
 
-			switchActiveLayerTo(Subject.elem);
+			active.stack = stacks['lm-elem'];
+			stacks['lm-elem'].show();
+
+			layerManager.addEventListener("click", mouseEvents);
+
 		}
 
+	/*
+			var dragEvent = function dragEvent(e) {
+				if (e.target.className === "layer") {
+					document.addEventListener("mousemove", drag);
+					document.addEventListener("mouseup", dragEnd);
+				}
+			}
+
+			var dragStart = function dragStart(e) {
+
+			}
+
+			var dragEnd = function dragEnd(e) {
+				document.removeEventListener("mousemove", drag);
+			}
+
+			var drag = function drag(e) {
+
+			}
+	*/
 		return {
 			init : init,
+			setActiveStack : setActiveStack
 		}
 
 	})();
@@ -779,14 +994,15 @@ var BoxShadow = (function BoxShadow() {
 			var max = node.getAttribute('data-max');
 			var step = node.getAttribute('data-step');
 			var value = node.getAttribute('data-value');
-			// var snap = node.getAttribute('data-snap');
+			var snap = node.getAttribute('data-snap');
+			var topic = node.getAttribute('data-topic');
 
 			this.min = min !== null ? min | 0 : 0;
 			this.max = max !== null ? max | 0 : 100;
-			this.step = step !== null ? step | 0 : 1;
+			this.step = step !== null && this.step > 0 ? step | 0 : 1;
 			this.value = value !== null && value > min && value < max ? value | 0 : 0;
-			// this.snap = snap === "true" ? true : false;
-			this.topic = node.id;
+			this.snap = snap === "true" ? 1 : 0;
+			this.topic = topic;
 			this.node = node;
 
 			var pointer = document.createElement('div');
@@ -796,8 +1012,9 @@ var BoxShadow = (function BoxShadow() {
 
 			setMouseTracking(node, updateSlider.bind(this));
 
-			subscribers[node.id] = [];
-			sliders[node.id] = this;
+			subscribers[topic] = [];
+			sliders[topic] = this;
+			setValue(topic, this.value);
 		}
 
 		var sliderComponent = function sliderComponent(node) {
@@ -805,7 +1022,7 @@ var BoxShadow = (function BoxShadow() {
 			var topic = node.getAttribute('data-topic');
 			if (type === "sub")
 				node.addEventListener("click", decrement.bind(sliders[topic]));
-			else
+			if (type === "add")
 				node.addEventListener("click", increment.bind(sliders[topic]));
 		}
 
@@ -837,9 +1054,16 @@ var BoxShadow = (function BoxShadow() {
 			if (pos > width) pos = width;
 
 			var value = pos * delta / width | 0;
-			value = value - value % this.step + this.min;
+			var precision = value % this.step;
+			value = value - precision + this.min;
+			if (precision > this.step / 2)
+				value = value + this.step;
 
-			this.pointer.style.left = pos - offset + "px";
+			if (this.snap) {
+				pos =  (value - this.min) * width / delta;
+			}
+
+			this.pointer.style.left = pos - offset/2 + "px";
 			this.value = value;
 			node.setAttribute('data-value', value);
 			notify.call(this);
@@ -847,12 +1071,16 @@ var BoxShadow = (function BoxShadow() {
 
 		var setValue = function setValue(topic, value) {
 			var slider = sliders[topic];
+
+			if (value > slider.max || value < slider.min)
+				return;
+
 			var delta = slider.max - slider.min;
 			var width = slider.node.clientWidth;
 			var offset = slider.pointer.clientWidth;
 			var pos =  (value - slider.min) * width / delta;
 			slider.value = value;
-			slider.pointer.style.left = pos - offset + 'px';
+			slider.pointer.style.left = pos - offset / 2 + "px";
 			slider.node.setAttribute('data-value', value);
 			notify.call(slider);
 		}
@@ -889,17 +1117,19 @@ var BoxShadow = (function BoxShadow() {
 			for (var i = 0; i < size; i++)
 				new Slider(elem[i]);
 
-			var elem = document.querySelectorAll('.ui-slider-set');
-			var size = elem.length;
+			elem = document.querySelectorAll('.ui-slider-set');
+			size = elem.length;
 			for (var i = 0; i < size; i++)
 				sliderComponent(elem[i]);
 
-			var elem = document.querySelectorAll('.ui-slider-get');
-			var size = elem.length;
+			elem = document.querySelectorAll('.ui-slider-get');
+			size = elem.length;
 			for (var i = 0; i < size; i++) {
 				var topic = elem[i].getAttribute('data-topic');
-				subscribe(topic, function(value){
-					this.textContent = value + "px";
+				var unit = elem[i].getAttribute('data-unit');
+				unit = (unit !== null) ? unit : '';
+				subscribe(topic, function(value) {
+					this.textContent = value + unit;
 				}.bind(elem[i]));
 			}
 		}
@@ -919,9 +1149,9 @@ var BoxShadow = (function BoxShadow() {
 	var init = function init() {
 		ColoPicker.init();
 		SliderManager.init();
-		Tool.init();
-		PreviewMouseTracking.init();
 		LayerManager.init();
+		PreviewMouseTracking.init("preview");
+		Tool.init();
 	}
 
 	return {
