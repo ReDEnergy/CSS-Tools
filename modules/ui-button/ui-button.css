@@ -1,0 +1,59 @@
+/*
+ * UI Button
+ */
+
+/* Checkbox */
+
+.ui-checkbox {
+	text-align: center;
+	font-size: 16px;
+	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+	line-height: 1.5em;
+	color: #FFF;
+
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.ui-checkbox > input {
+ 	display: none;
+}
+
+.ui-checkbox > label {
+	font-size: 12px;
+	padding: 0.333em 1.666em 0.5em;
+	height: 1em;
+	line-height: 1em;
+
+	background-color: #888;
+	background-image: url("disabled.png");
+	background-position: center center;
+	background-repeat: no-repeat;
+
+	color: #FFF;
+	border-radius: 3px;
+	font-weight: bold;
+	float: left;
+}
+
+.ui-checkbox .text {
+	padding-left: 34px;
+	background-position: center left 10px;
+}
+
+.ui-checkbox .left {
+	padding-right: 34px;
+	padding-left: 1.666em;
+	background-position: center right 10px;
+}
+
+.ui-checkbox > label:hover {
+	cursor: pointer;
+}
+
+.ui-checkbox > input:checked + label {
+	background-image: url("checked.png");
+	background-color: #379B4A;
+}

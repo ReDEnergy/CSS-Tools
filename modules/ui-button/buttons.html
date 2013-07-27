@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<title> Border Image Tool </title>
+	<link href="ui-button.css" rel="stylesheet"/>
+	<script src="ui-button.js"></script>
+
+</head>
+
+	<style>
+		#container {
+			width: 960px;
+			margin: 0 auto;
+		}
+
+		#container > div {
+			margin: 20px;
+			float: left;
+		}
+	</style>
+
+<body>
+	<div id="container">
+		<div class="ui-checkbox" data-topic='t1' data-state="true"
+			data-label="text" data-text-on="left"></div>
+		<div class="ui-checkbox" data-topic='t2' data-state="false"
+			data-label="text"></div>
+		<div class="ui-checkbox" data-topic='t3' data-state="true"></div>
+		<div class="ui-checkbox" data-topic='t4'></div>
+	</div>
+</body>
+
+	<script type="text/javascript">
+		window.onload = function () {
+			ButtonManager.init();
+		}
+	</script>
+</html>
