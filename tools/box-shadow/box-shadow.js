@@ -96,20 +96,33 @@ var BoxShadow = (function BoxShadow() {
 		var saturation = 0;
 
 		if (delta) {
-			if (cmax === red ) { hue = ((green - blue) / delta) % 6;}
-			if (cmax === blue ) { hue = ((blue - red) / delta) + 2; }
-			if (cmax === green ) { hue = ((red - green) / delta) + 4; }
+			if (cmax === red ) { hue = ((green - blue) / delta); }
+			if (cmax === green ) { hue = 2 + (blue - red) / delta; }
+			if (cmax === blue ) { hue = 4 + (red - green) / delta; }
 			if (cmax) saturation = delta / cmax;
 		}
-		this.hue = 60 * hue;
+
+		this.hue = 60 * hue | 0;
+		if (this.hue < 0) this.hue += 360;
 		this.saturation = (saturation * 100) | 0;
 		this.value = (cmax * 100) | 0;
 	}
 
-	Color.prototype.setHexa = function setHexa(hred, hgreen, hblue) {
-		this.r = parseInt(hred, 16);
-		this.g = parseInt(hgreen, 16);
-		this.b = parseInt(hblue, 16);
+	Color.prototype.setHexa = function setHexa(value) {
+		var valid  = /(^#{0,1}[0-9A-F]{6}$)|(^#{0,1}[0-9A-F]{3}$)/i.test(value)
+		if (valid !== true)
+			return;
+
+		if (value[0] === '#')
+			value = value.slice(1, value.length);
+
+		if (value.length === 3)
+			value = value.replace(/([0-9A-F])([0-9A-F])([0-9A-F])/i,"$1$1$2$2$3$3");
+
+		this.r = parseInt(value.substr(0, 2), 16);
+		this.g = parseInt(value.substr(2, 2), 16);
+		this.b = parseInt(value.substr(4, 2), 16);
+
 		this.alpha	= 1;
 	}
 
@@ -151,10 +164,14 @@ var BoxShadow = (function BoxShadow() {
 		this.inset  = false;
 		this.posX   = 5;
 		this.posY   = -5;
-		this.blur   = 10;
+		this.blur   = 5;
 		this.spread = 0;
 		this.color  = new Color();
-		this.color.setHSV(180, 10, 90, 1);
+
+		var hue			= (Math.random() * 360) | 0;
+		var saturation	= (Math.random() * 75) | 0;
+		var value 		= (Math.random() * 50 + 50) | 0;
+		this.color.setHSV(hue, saturation, value, 1);
 	}
 
 	Shadow.prototype.computeCSS = function computeCSS() {
@@ -170,8 +187,11 @@ var BoxShadow = (function BoxShadow() {
 		return value;
 	}
 
-	Shadow.prototype.toggleInset = function toggleInset() {
-		this.inset = this.inset === true ? false : true;
+	Shadow.prototype.toggleInset = function toggleInset(value) {
+		if (value !== undefined || typeof value === "boolean")
+			this.inset = value;
+		else
+			this.inset = this.inset === true ? false : true;
 	}
 
 	Shadow.prototype.copy = function copy(obj) {
@@ -230,7 +250,7 @@ var BoxShadow = (function BoxShadow() {
 			// should update just
 			// color pointer location
 			updateUI();
-			notify();
+			notify("color", color);
 		}
 
 		var updateHue = function updateHue(e) {
@@ -250,7 +270,7 @@ var BoxShadow = (function BoxShadow() {
 			// picker area background
 			// alpha area background
 			updateUI();
-			notify();
+			notify("color", color);
 		}
 
 		var updateAlpha = function updateAlpha(e) {
@@ -265,7 +285,7 @@ var BoxShadow = (function BoxShadow() {
 			// should update just
 			// alpha pointer location
 			updateUI();
-			notify();
+			notify("color", color);
 		}
 
 		var setHueGfx = function setHueGfx(hue) {
@@ -293,7 +313,7 @@ var BoxShadow = (function BoxShadow() {
 
 			// Set color pointer location
 			size = gradient_area.clientWidth;
-			offset = gradient_picker.clientWidth / 2;
+			offset = gradient_picker.clientWidth / 2 + 2;
 
 			x = (color.saturation * size / 100) | 0;
 			y = size - (color.value * size / 100) | 0;
@@ -330,10 +350,98 @@ var BoxShadow = (function BoxShadow() {
 			alpha_area.style.background = gradient;
 
 			// Update color info
-			info_rgb.textContent = color.getRGBA();
-			info_hsv.textContent = "HSV " + color.hue + " " + color.saturation + " " + color.value;
-			info_hexa.textContent = color.getHexa();
+			notify("color", color);
+			notify("hue", color.hue);
+			notify("saturation", color.saturation);
+			notify("value", color.value);
+			notify("r", color.r);
+			notify("g", color.g);
+			notify("b", color.b);
+			notify("a", color.a);
+			notify("hexa", color.getHexa());
 			output_color.style.backgroundColor = color.getRGBA();
+		}
+
+		var setInputComponent = function setInputComponent(node) {
+			var topic = node.getAttribute('data-topic');
+			var title = node.getAttribute('data-title');
+			var action = node.getAttribute('data-action');
+			title = title === null ? '' : title;
+
+			var input = document.createElement('input');
+			var info = document.createElement('span');
+			info.textContent = title;
+
+			input.setAttribute('type', 'text');
+			input.setAttribute('data-action', 'set-' + action + '-' + topic);
+			node.appendChild(info);
+			node.appendChild(input);
+
+			input.addEventListener('click', function(e) {
+				this.select();
+			});
+
+			input.addEventListener('change', function(e) {
+				if (action === 'HSV')
+					inputChangeHSV(topic);
+				if (action === 'RGB')
+					inputChangeRGB(topic);
+				if (action === 'alpha')
+					inputChangeAlpha(topic);
+				if (action === 'hexa')
+					inputChangeHexa(topic);
+			});
+
+			subscribe(topic, function(value) {
+				node.children[1].value = value;
+			});
+		}
+
+		var inputChangeHSV = function actionHSV(topic) {
+			var selector = "[data-action='set-HSV-" + topic + "']";
+			var node = document.querySelector("#colorpicker " + selector);
+			var value = parseInt(node.value);
+
+			if (typeof value === 'number' && isNaN(value) === false &&
+				value >= 0 && value < 360)
+				color[topic] = value;
+
+			color.updateRGB();
+			updateUI();
+		}
+
+		var inputChangeRGB = function inputChangeRGB(topic) {
+			var selector = "[data-action='set-RGB-" + topic + "']";
+			var node = document.querySelector("#colorpicker " + selector);
+			var value = parseInt(node.value);
+
+			if (typeof value === 'number' && isNaN(value) === false &&
+				value >= 0 && value <= 255)
+				color[topic] = value;
+
+			color.updateHSV();
+			updateUI();
+		}
+
+		var inputChangeAlpha = function inputChangeAlpha(topic) {
+			var selector = "[data-action='set-alpha-" + topic + "']";
+			var node = document.querySelector("#colorpicker " + selector);
+			var value = parseFloat(node.value);
+
+			if (typeof value === 'number' && isNaN(value) === false &&
+				value >= 0 && value <= 1)
+				color.a = value.toFixed(2);
+
+			updateUI();
+		}
+
+		var inputChangeHexa = function inputChangeHexa(topic) {
+			var selector = "[data-action='set-hexa-" + topic + "']";
+			var node = document.querySelector("#colorpicker " + selector);
+			var value = node.value;
+			color.setHexa(value);
+			color.updateHSV();
+			updateUI();
 		}
 
 		var setMouseTracking = function setMouseTracking(elem, callback) {
@@ -353,16 +461,18 @@ var BoxShadow = (function BoxShadow() {
 		 */
 		var setColor = function setColor(obj) {
 			if(obj instanceof Color !== true) {
-			console.log("Typeof instance not Color");
+				console.log("Typeof instance not Color");
 				return;
 			}
-
 			color.copy(obj);
 			updateUI();
 		}
 
-		var subscribe = function subscribe(callback) {
-			subscribers.push(callback);
+		var subscribe = function subscribe(topic, callback) {
+			if (subscribers[topic] === undefined)
+				subscribers[topic] = [];
+
+			subscribers[topic].push(callback);
 		}
 
 		var unsubscribe = function unsubscribe(callback) {
@@ -370,9 +480,9 @@ var BoxShadow = (function BoxShadow() {
 			subscribers.splice(index, 1);
 		}
 
-		var notify = function notify() {
-			for (var i in subscribers)
-				subscribers[i](color);
+		var notify = function notify(topic, value) {
+			for (var i in subscribers[topic])
+				subscribers[topic][i](value);
 		}
 
 		var init = function init() {
@@ -383,16 +493,17 @@ var BoxShadow = (function BoxShadow() {
 			gradient_picker	= getElemById("gradient_picker");
 			hue_selector	= getElemById("hue_selector");
 			alpha_selector	= getElemById("alpha_selector");
-			info_rgb		= getElemById("info_rgb");
-			info_hsv		= getElemById("info_hsv");
-			info_hexa		= getElemById("info_hexa");
 			output_color	= getElemById("output_color");
+
+			var elem = document.querySelectorAll('#colorpicker .input');
+			var size = elem.length;
+			for (var i = 0; i < size; i++)
+				setInputComponent(elem[i]);
 
 			setMouseTracking(gradient_area, updateColor);
 			setMouseTracking(hue_area, updateHue);
 			setMouseTracking(alpha_area, updateAlpha);
-			color.setHSV(180, 50, 50);
-			updateUI();
+
 		}
 
 		return {
@@ -450,7 +561,7 @@ var BoxShadow = (function BoxShadow() {
 		}
 
 		var unsubscribe = function unsubscribe(callback) {
-			subscribers.indexOf(callback);
+			var index = subscribers.indexOf(callback);
 			subscribers.splice(index, 1);
 		}
 
@@ -471,73 +582,136 @@ var BoxShadow = (function BoxShadow() {
 	 * Element Class
 	 */
 	var CssClass = function CssClass(id) {
-		this.posX = 0;
-		this.posY = 0;
+		this.left = 0;
+		this.top = 0;
 		this.rotate = 0;
-		this.width = 200;
+		this.width = 300;
 		this.height = 100;
 		this.display = true;
+		this.border = true;
+		this.zIndex = -1;
 		this.bgcolor = new Color();
 		this.id = id;
 		this.node = getElemById('obj-' + id);
+		this.object = getElemById(id);
 		this.shadowID = null;
 		this.shadows = []
 		this.render = [];
+		this.init();
 	}
 
-	CssClass.prototype.center = function center() {
-		this.posX = ((this.node.parentNode.clientWidth - this.node.clientWidth) / 2) | 0;
-		this.posY = ((this.node.parentNode.clientHeight - this.node.clientHeight) / 2) | 0;
+	CssClass.prototype.init = function init() {
+		this.left = ((this.node.parentNode.clientWidth - this.node.clientWidth) / 2) | 0;
+		this.top = ((this.node.parentNode.clientHeight - this.node.clientHeight) / 2) | 0;
 
-		this.node.style.top = this.posY + "px";
-		this.node.style.left = this.posX + "px";
+		this.setTop(this.top);
+		this.setLeft(this.left);
+		this.setHeight(this.height);
+		this.setWidth(this.width);
+		this.bgcolor.setHSV(0, 0, 100);
+		this.updateBgColor(this.bgcolor);
 	}
 
 	CssClass.prototype.updatePos = function updatePos(deltaX, deltaY) {
-		this.posX += deltaX;
-		this.posY += deltaY;
-		this.node.style.top = this.posY + "px";
-		this.node.style.left = this.posX + "px";
+		this.left += deltaX;
+		this.top += deltaY;
+		this.node.style.top = this.top + "px";
+		this.node.style.left = this.left + "px";
+		SliderManager.setValue("left", this.left);
+		SliderManager.setValue("top", this.top);
 	}
 
-	CssClass.prototype.setPosX = function setPosX(value) {
-		this.posX = value;
-		this.node.style.left = this.posX + "px";
+	CssClass.prototype.setLeft = function setLeft(value) {
+		this.left = value;
+		this.node.style.left = this.left + "px";
+		OutputManager.updateProperty(this.id, 'left', this.left + 'px');
 	}
 
-	CssClass.prototype.setPosY = function setPosY(value) {
-		this.posY = value;
-		this.node.style.left = this.posY + "px";
+	CssClass.prototype.setTop = function setTop(value) {
+		this.top = value;
+		this.node.style.top = this.top + 'px';
+		OutputManager.updateProperty(this.id, 'top', this.top + 'px');
 	}
 
 	CssClass.prototype.setWidth = function setWidth(value) {
 		this.width = value;
-		this.node.style.width = this.width + "px";
+		this.node.style.width = this.width + 'px';
+		OutputManager.updateProperty(this.id, 'width', this.width + 'px');
 	}
 
 	CssClass.prototype.setHeight = function setHeight(value) {
 		this.height = value;
-		this.node.style.height = this.height + "px";
+		this.node.style.height = this.height + 'px';
+		OutputManager.updateProperty(this.id, 'height', this.height + 'px');
 	}
 
+	// Browser support
 	CssClass.prototype.setRotate = function setRotate(value) {
+		var cssvalue = 'rotate(' + value +'deg)';
+
+		this.node.style.transform = cssvalue;
+		this.node.style.webkitTransform = cssvalue;
+		this.node.style.msTransform = cssvalue;
+
+		if (value !== 0) {
+			if (this.rotate === 0) {
+				OutputManager.toggleProperty(this.id, 'transform', true);
+				OutputManager.toggleProperty(this.id, '-webkit-transform', true);
+				OutputManager.toggleProperty(this.id, '-ms-transform', true);
+			}
+		}
+		else {
+			OutputManager.toggleProperty(this.id, 'transform', false);
+			OutputManager.toggleProperty(this.id, '-webkit-transform', false);
+			OutputManager.toggleProperty(this.id, '-ms-transform', false);
+		}
+
+		OutputManager.updateProperty(this.id, 'transform', cssvalue);
+		OutputManager.updateProperty(this.id, '-webkit-transform', cssvalue);
+		OutputManager.updateProperty(this.id, '-ms-transform', cssvalue);
 		this.rotate = value;
-		this.node.style.transform = 'rotate(' + value +'deg)';
+	}
+
+	CssClass.prototype.setzIndex = function setzIndex(value) {
+		this.node.style.zIndex = value;
+		OutputManager.updateProperty(this.id, 'z-index', value);
+		this.zIndex = value;
 	}
 
 	CssClass.prototype.toggleDisplay = function toggleDisplay(value) {
-		if (value === undefined || typeof value !== "boolean" || this.display === value)
+		if (typeof value !== "boolean" || this.display === value)
 			return;
 
 		this.display = value;
 		var display = this.display === true ? "block" : "none";
 		this.node.style.display = display;
-		getElemById(this.id).style.display = display;
+		this.object.style.display = display;
+	}
+
+	CssClass.prototype.toggleBorder = function toggleBorder(value) {
+		if (typeof value !== "boolean" || this.border === value)
+			return;
+
+		this.border = value;
+		var border = this.border === true ? "1px solid #CCC" : "none";
+		this.node.style.border = border;
 	}
 
 	CssClass.prototype.updateBgColor = function updateBgColor(color) {
 		this.bgcolor.copy(color);
 		this.node.style.backgroundColor = color.getColor();
+		OutputManager.updateProperty(this.id, 'background-color', color.getColor());
+	}
+
+	CssClass.prototype.updateShadows = function updateShadows() {
+		if (this.render.length === 0)
+			OutputManager.toggleProperty(this.id, 'box-shadow', false);
+		if (this.render.length === 1)
+			OutputManager.toggleProperty(this.id, 'box-shadow', true);
+
+		this.node.style.boxShadow = this.render.join(", ");
+		OutputManager.updateProperty(this.id, 'box-shadow', this.render.join(", \n"));
+
 	}
 
 
@@ -549,71 +723,92 @@ var BoxShadow = (function BoxShadow() {
 		var preview;
 		var classes = [];
 		var active = null;
-		var output;
+		var animate = false;
 
 		/*
 		 * Toll actions
 		 */
 		var addCssClass = function addCssClass(id) {
 			classes[id] = new CssClass(id);
-			classes[id].center();
 		}
 
 		var setActiveClass = function setActiveClass(id) {
 			active = classes[id];
 			active.shadowID = null;
 			ColoPicker.setColor(classes[id].bgcolor);
+			SliderManager.setValue("top", active.top);
+			SliderManager.setValue("left", active.left);
 			SliderManager.setValue("rotate", active.rotate);
+			SliderManager.setValue("z-index", active.zIndex);
 			SliderManager.setValue("width", active.width);
 			SliderManager.setValue("height", active.height);
+			ButtonManager.setValue("border-state", active.border);
+			active.updateShadows();
 		}
 
-		var addShadow = function addShadow() {
-			var length = active.shadows.push(new Shadow());
-			setActiveShadow(length - 1);
-			update();
+		var disableClass = function disableClass(topic) {
+			classes[topic].toggleDisplay(false);
+			ButtonManager.setValue(topic, false);
 		}
 
-		var deleteShadow = function deleteShadow(id) {
-			delete active.shadows[id];
-			delete active.render[id];
-			update();
+		var addShadow = function addShadow(position) {
+			if (animate === true)
+				return -1;
+
+			active.shadows.splice(position, 0, new Shadow());
+			active.render.splice(position, 0, null);
 		}
 
-		var addGlowEffect = function addGlowEffect(id) {
-
-			var store = new Shadow();
-			store.copy(active.shadows[id]);
-			active.shadows[id].color.setRGBA(40, 125, 200, 1);
-			active.shadows[id].blur = 10;
-			active.shadows[id].spread = 10;
-
-			active.node.style.transition = "box-shadow 0.2s";
-			updateShadowCSS(id);
-			update();
-
-			setTimeout(function() {
-				active.shadows[id].copy(store);
-				updateShadowCSS(id);
-				update();
-				setTimeout(function() {
-					active.node.style.removeProperty("transition");
-				}, 100);
-			}, 200);
+		var swapShadow = function swapShadow(id1, id2) {
+			var x = active.shadows[id1];
+			active.shadows[id1] = active.shadows[id2];
+			active.shadows[id2] = x;
+			updateShadowCSS(id1);
+			updateShadowCSS(id2);
 		}
 
-		var setActiveShadow = function setActiveShadow(id) {
-			if (active.shadowID === id)
-				return;
+		var deleteShadow = function deleteShadow(position) {
+			active.shadows.splice(position, 1);
+			active.render.splice(position, 1);
+			active.updateShadows();
+		}
 
+		var setActiveShadow = function setActiveShadow(id, glow) {
 			active.shadowID = id;
 			ColoPicker.setColor(active.shadows[id].color);
+			ButtonManager.setValue("inset", active.shadows[id].inset);
 			SliderManager.setValue("blur", active.shadows[id].blur);
 			SliderManager.setValue("spread", active.shadows[id].spread);
 			SliderManager.setValue("posX", active.shadows[id].posX);
 			SliderManager.setValue("posY", active.shadows[id].posY);
+			if (glow === true)
+				addGlowEffect(id);
+		}
 
-			addGlowEffect(id);
+		var addGlowEffect = function addGlowEffect(id) {
+			if (animate === true)
+				return;
+
+			animate = true;
+			var store = new Shadow();
+			var shadow = active.shadows[id];
+
+			store.copy(shadow);
+			shadow.color.setRGBA(40, 125, 200, 1);
+			shadow.blur = 10;
+			shadow.spread = 10;
+
+			active.node.style.transition = "box-shadow 0.2s";
+			updateShadowCSS(id);
+
+			setTimeout(function() {
+				shadow.copy(store);
+				updateShadowCSS(id);
+				setTimeout(function() {
+					active.node.style.removeProperty("transition");
+					animate = false;
+				}, 100);
+			}, 200);
 		}
 
 		var updateActivePos = function updateActivePos(deltaX, deltaY) {
@@ -623,33 +818,19 @@ var BoxShadow = (function BoxShadow() {
 				updateShadowPos(deltaX, deltaY);
 		}
 
-		var setActivePosX = function setActivePosX(value) {
-			if (active.shadowID === null)
-				active.setPosX(value);
-			else
-				setShadowPosX(value);
-		}
-
-		var setActivePosY = function setActivePosY(value) {
-			if (active.shadowID === null)
-				active.setPosY(value);
-			else
-				setShadowPosY(value);
-		}
-
 		/*
 		 * Shadow properties
 		 */
 		var updateShadowCSS = function updateShadowCSS(id) {
 			active.render[id] = active.shadows[id].computeCSS();
+			active.updateShadows();
 		}
 
-		var toggleShadowInset = function toggleShadowInset() {
+		var toggleShadowInset = function toggleShadowInset(value) {
 			if (active.shadowID === null)
 				return;
-			active.shadows[active.shadowID].toggleInset();
+			active.shadows[active.shadowID].toggleInset(value);
 			updateShadowCSS(active.shadowID);
-			update();
 		}
 
 		var updateShadowPos = function updateShadowPos(deltaX, deltaY) {
@@ -659,7 +840,6 @@ var BoxShadow = (function BoxShadow() {
 			SliderManager.setValue("posX", shadow.posX);
 			SliderManager.setValue("posY", shadow.posY);
 			updateShadowCSS(active.shadowID);
-			update();
 		}
 
 		var setShadowPosX = function setShadowPosX(value) {
@@ -667,7 +847,6 @@ var BoxShadow = (function BoxShadow() {
 				return;
 			active.shadows[active.shadowID].posX = value;
 			updateShadowCSS(active.shadowID);
-			update();
 		}
 
 		var setShadowPosY = function setShadowPosY(value) {
@@ -675,7 +854,6 @@ var BoxShadow = (function BoxShadow() {
 				return;
 			active.shadows[active.shadowID].posY = value;
 			updateShadowCSS(active.shadowID);
-			update();
 		}
 
 		var setShadowBlur = function setShadowBlur(value) {
@@ -683,7 +861,6 @@ var BoxShadow = (function BoxShadow() {
 				return;
 			active.shadows[active.shadowID].blur = value;
 			updateShadowCSS(active.shadowID);
-			update();
 		}
 
 		var setShadowSpread = function setShadowSpread(value) {
@@ -691,20 +868,16 @@ var BoxShadow = (function BoxShadow() {
 				return;
 			active.shadows[active.shadowID].spread = value;
 			updateShadowCSS(active.shadowID);
-			update();
 		}
 
 		var updateShadowColor = function updateShadowColor(color) {
 			active.shadows[active.shadowID].color.copy(color);
 			updateShadowCSS(active.shadowID);
-			update();
 		}
 
 		/*
 		 * Element Properties
 		 */
-
-
 		var updateColor = function updateColor(color) {
 			if (active.shadowID === null)
 				active.updateBgColor(color);
@@ -712,61 +885,74 @@ var BoxShadow = (function BoxShadow() {
 				updateShadowColor(color);
 		}
 
-		var update = function update() {
-			var outputCSS = [];
-			for (var i in active.render)
-				if (active.render[i])
-					outputCSS.push(active.render[i]);
-			output.textContent = outputCSS.join(", \n");
-
-			active.node.style.boxShadow = outputCSS.join(", ");
-		}
-
 		var init = function init() {
 			preview = getElemById("preview");
-			output  = getElemById("output");
 
-			ColoPicker.subscribe(updateColor);
+			ColoPicker.subscribe("color", updateColor);
 			PreviewMouseTracking.subscribe(updateActivePos);
-			SliderManager.subscribe("posX", setActivePosX);
-			SliderManager.subscribe("posY", setActivePosY);
+
+			// Affects shadows
+			ButtonManager.subscribe("inset", toggleShadowInset);
+			SliderManager.subscribe("posX", setShadowPosX);
+			SliderManager.subscribe("posY", setShadowPosY);
 			SliderManager.subscribe("blur", setShadowBlur);
 			SliderManager.subscribe("spread", setShadowSpread);
-			SliderManager.subscribe("rotate", function(value){
-				active.setRotate(value)
+
+			// Affects element
+			SliderManager.subscribe("top", function(value){
+				active.setTop(value);
 			});
-			SliderManager.subscribe("width", function(value){
+			SliderManager.subscribe("left", function(value){
+				active.setLeft(value);
+			});
+			SliderManager.subscribe("rotate", function(value) {
+				if (active == classes["element"])
+					return;
+				active.setRotate(value);
+			});
+
+			SliderManager.subscribe("z-index", function(value) {
+				if (active == classes["element"])
+					return;
+				active.setzIndex(value);
+			});
+
+			SliderManager.subscribe("width", function(value) {
 				active.setWidth(value)
 			});
-			SliderManager.subscribe("height", function(value){
+
+			SliderManager.subscribe("height", function(value) {
 				active.setHeight(value)
 			});
 
+			// Actions
+			classes['before'].top = -30;
+			classes['before'].left = -30;
+			classes['after'].top = 30;
+			classes['after'].left = 30;
+			classes['before'].toggleDisplay(false);
+			classes['after'].toggleDisplay(false);
+			ButtonManager.setValue('before', false);
+			ButtonManager.setValue('after', false);
 
-			classes['lm-before'].toggleDisplay(false);
-			classes['lm-after'].toggleDisplay(false);
+			ButtonManager.subscribe("before", classes['before'].toggleDisplay.bind(classes['before']));
+			ButtonManager.subscribe("after", classes['after'].toggleDisplay.bind(classes['after']));
 
-			var inset =  document.getElementById("sw_inset");
-			var after =  document.getElementById("sw_after");
-			var before =  document.getElementById("sw_before");
-
-			inset.addEventListener("change", toggleShadowInset);
-			before.addEventListener("change", function(e) {
-				classes['lm-before'].toggleDisplay(e.target.checked);
+			ButtonManager.subscribe("border-state", function(value) {
+				active.toggleBorder(value);
 			});
-			after.addEventListener("change", function(e) {
-				classes['lm-after'].toggleDisplay(e.target.checked);
-			});
+
 		}
 
 		return {
 			init 			: init,
 			addShadow		: addShadow,
+			swapShadow		: swapShadow,
 			addCssClass		: addCssClass,
+			disableClass	: disableClass,
 			deleteShadow	: deleteShadow,
 			setActiveClass	: setActiveClass,
-			setActiveShadow : setActiveShadow,
-			updateActivePos : updateActivePos
+			setActiveShadow : setActiveShadow
 		}
 
 	})();
@@ -775,21 +961,23 @@ var BoxShadow = (function BoxShadow() {
 	 * Layer Manager
 	 */
 	var LayerManager = (function LayerManager() {
-		var layerManager;
-		var container;
 		var stacks = [];
 		var active = {
 			node : null,
 			stack : null
 		}
+		var elements = {};
 
 		var mouseEvents = function mouseEvents(e) {
 			var node = e.target;
 			var type = node.getAttribute('data-type');
-			console.log('Action TYPE:', type);
 
-			if (type === 'subject') {
+			if (type === 'subject')
 				setActiveStack(stacks[node.id]);
+
+			if (type === 'disable') {
+				Tool.disableClass(node.parentNode.id);
+				setActiveStack(stacks['element']);
 			}
 
 			if (type === 'add')
@@ -800,6 +988,12 @@ var BoxShadow = (function BoxShadow() {
 
 			if (type === 'delete')
 				active.stack.deleteLayer(node.parentNode);
+
+			if (type === 'move-up')
+				active.stack.moveLayer(1);
+
+			if (type === 'move-down')
+				active.stack.moveLayer(-1);
 		}
 
 		var setActiveStack = function setActiveStack(stackObj) {
@@ -811,7 +1005,7 @@ var BoxShadow = (function BoxShadow() {
 		/*
 		 * Stack object
 		 */
-		var Stack = function Stack(parent) {
+		var Stack = function Stack(subject) {
 			var S = document.createElement('div');
 			var title = document.createElement('div');
 			var stack = document.createElement('div');
@@ -819,26 +1013,34 @@ var BoxShadow = (function BoxShadow() {
 			S.className = 'container';
 			stack.className = 'stack';
 			title.className = 'title';
-			title.textContent = parent.getAttribute('data-title');
+			title.textContent = subject.getAttribute('data-title');
 			S.appendChild(title);
 			S.appendChild(stack);
 
-			this.id = parent.id;
+			this.id = subject.id;
 			this.container = S;
 			this.stack = stack;
-			this.parent = parent;
+			this.subject = subject;
 			this.order = [];
+			this.uid = 0;
 			this.count = 0;
 			this.layer = null;
 			this.layerID = 0;
 		}
 
 		Stack.prototype.addLayer = function addLayer() {
+			if (Tool.addShadow(this.layerID) == -1)
+				return;
+
 			var uid = this.getUID();
 			var layer = this.createLayer(uid);
+
+			if (this.layer === null && this.stack.children.length >= 1)
+				this.layer = this.stack.children[0];
+
 			this.stack.insertBefore(layer, this.layer);
 			this.order.splice(this.layerID, 0, uid);
-			Tool.addShadow();
+			this.count++;
 			this.setActiveLayer(layer);
 		}
 
@@ -859,37 +1061,80 @@ var BoxShadow = (function BoxShadow() {
 		}
 
 		Stack.prototype.getUID = function getUID() {
-			return this.count++;
+			return this.uid++;
+		}
+
+		// SOLVE IE BUG
+		Stack.prototype.moveLayer = function moveLayer(direction) {
+			if (this.count <= 1 || this.layer === null)
+				return;
+			if (direction === -1 && this.layerID === (this.count - 1) )
+				return;
+			if (direction === 1 && this.layerID === 0 )
+				return;
+
+			if (direction === -1) {
+				var before = null;
+				Tool.swapShadow(this.layerID, this.layerID + 1);
+				this.swapOrder(this.layerID, this.layerID + 1);
+				this.layerID += 1;
+
+				if (this.layerID + 1 !== this.count)
+					before = this.stack.children[this.layerID + 1];
+
+				this.stack.insertBefore(this.layer, before);
+				Tool.setActiveShadow(this.layerID, false);
+			}
+
+			if (direction === 1) {
+				Tool.swapShadow(this.layerID, this.layerID - 1);
+				this.swapOrder(this.layerID, this.layerID - 1);
+				this.layerID -= 1;
+				this.stack.insertBefore(this.layer, this.stack.children[this.layerID]);
+				Tool.setActiveShadow(this.layerID, false);
+			}
+		}
+
+		Stack.prototype.swapOrder = function swapOrder(pos1, pos2) {
+			var x = this.order[pos1];
+			this.order[pos1] = this.order[pos2];
+			this.order[pos2] = x;
 		}
 
 		Stack.prototype.deleteLayer = function deleteLayer(node) {
-			var same = false;
-			if (this.layer === node) {
-				same = true;
-				this.layer = null;
-			}
-
 			var shadowID =  node.getAttribute('data-shid') | 0;
 			var index = this.order.indexOf(shadowID);
 			this.stack.removeChild(this.stack.children[index]);
 			this.order.splice(index, 1);
+			this.count--;
 
-			if (index < this.layerID)
-				this.layerID--;
+			Tool.deleteShadow(index);
 
-			if (same && this.stack.children.length >= 1) {
-				this.layer = this.stack.children[0];
-				this.layerID = 0;
+			if (index > this.layerID)
+				return;
+
+			if (index == this.layerID) {
+				if (this.count >= 1) {
+					this.layerID = 0;
+					this.setActiveLayer(this.stack.children[0], true);
+				}
+				else {
+					this.layer = null;
+					this.show();
+				}
 			}
 
-			if (same)
-				this.show();
+			if (index < this.layerID) {
+				this.layerID--;
+				Tool.setActiveShadow(this.layerID, true);
+			}
 
-			Tool.deleteShadow(shadowID);
-			console.log(this);
 		}
 
 		Stack.prototype.setActiveLayer = function setActiveLayer(node) {
+			elements.shadow_properties.style.display = 'block';
+			elements.element_properties.style.display = 'none';
+
 			if (this.layer)
 				this.layer.removeAttribute('data-active');
 
@@ -898,31 +1143,39 @@ var BoxShadow = (function BoxShadow() {
 
 			var shadowID =  node.getAttribute('data-shid') | 0;
 			this.layerID = this.order.indexOf(shadowID);
-			Tool.setActiveShadow(shadowID);
+			Tool.setActiveShadow(this.layerID, true);
 		}
 
 		Stack.prototype.unsetActiveLayer = function unsetActiveLayer() {
 			if (this.layer)
 				this.layer.removeAttribute('data-active');
 
-			if (this.stack.children.length >= 1)
-				this.layer = this.stack.children[0];
-			else
-				this.layer = null;
-
+			this.layer = null;
 			this.layerID = 0;
 		}
 
 		Stack.prototype.hide = function hide() {
 			this.unsetActiveLayer();
-			this.parent.removeAttribute('data-active');
+			this.subject.removeAttribute('data-active');
 			var style = this.container.style;
 			style.left = '100%';
 			style.zIndex = '0';
 		}
 
 		Stack.prototype.show = function show() {
-			this.parent.setAttribute('data-active', 'subject');
+			elements.shadow_properties.style.display = 'none';
+			elements.element_properties.style.display = 'block';
+
+			if (this.id === 'element') {
+				elements.zIndex.style.display = 'none';
+				elements.transform_rotate.style.display = 'none';
+			}
+			else {
+				elements.zIndex.style.display = 'block';
+				elements.transform_rotate.style.display = 'block';
+			}
+
+			this.subject.setAttribute('data-active', 'subject');
 			var style = this.container.style;
 			style.left = '0';
 			style.zIndex = '10';
@@ -932,10 +1185,16 @@ var BoxShadow = (function BoxShadow() {
 		function init() {
 
 			var elem, size;
-			layerManager = getElemById("layer_manager");
-			container = getElemById("stack_container");
+			var layerManager = getElemById("layer_manager");
+			var layerMenu = getElemById("layer_menu");
+			var container = getElemById("stack_container");
 
-			elem = document.querySelectorAll('[data-type="subject"]');
+			elements.shadow_properties = getElemById('shadow_properties');
+			elements.element_properties = getElemById('element_properties');
+			elements.transform_rotate = getElemById('transform_rotate');
+			elements.zIndex = getElemById('z-index');
+
+			elem = document.querySelectorAll('#layer_menu [data-type="subject"]');
 			size = elem.length;
 
 			for (var i = 0; i < size; i++) {
@@ -945,208 +1204,183 @@ var BoxShadow = (function BoxShadow() {
 				Tool.addCssClass(elem[i].id);
 			}
 
-			active.stack = stacks['lm-elem'];
-			stacks['lm-elem'].show();
+			active.stack = stacks['element'];
+			stacks['element'].show();
 
 			layerManager.addEventListener("click", mouseEvents);
+			layerMenu.addEventListener("click", mouseEvents);
 
+			ButtonManager.subscribe("before", function(value) {
+				if (value === false && active.stack === stacks['before'])
+					setActiveStack(stacks['element'])
+				if (value === true && active.stack !== stacks['before'])
+					setActiveStack(stacks['before'])
+			});
+
+			ButtonManager.subscribe("after", function(value) {
+				if (value === false && active.stack === stacks['after'])
+					setActiveStack(stacks['element'])
+				if (value === true && active.stack !== stacks['after'])
+					setActiveStack(stacks['after'])
+			});
 		}
 
-	/*
-			var dragEvent = function dragEvent(e) {
-				if (e.target.className === "layer") {
-					document.addEventListener("mousemove", drag);
-					document.addEventListener("mouseup", dragEnd);
-				}
-			}
-
-			var dragStart = function dragStart(e) {
-
-			}
-
-			var dragEnd = function dragEnd(e) {
-				document.removeEventListener("mousemove", drag);
-			}
-
-			var drag = function drag(e) {
-
-			}
-	*/
 		return {
-			init : init,
-			setActiveStack : setActiveStack
+			init : init
 		}
-
 	})();
 
-	// TODO optimize math
-	// TODO snapping
-	/**
-	 * UI-SlidersManager
+	/*
+	 * OutputManager
 	 */
-	var SliderManager = (function SliderManager() {
+	var OutputManager = (function OutputManager() {
+		var classes = [];
+		var buttons = [];
+		var active = null;
+		var menu = null;
+		var button_offset = 0;
 
-		var subscribers = {};
-		var sliders = [];
+		var crateOutputNode = function(topic, property) {
 
-		var Slider = function(node) {
-			var min = node.getAttribute('data-min');
-			var max = node.getAttribute('data-max');
-			var step = node.getAttribute('data-step');
-			var value = node.getAttribute('data-value');
-			var snap = node.getAttribute('data-snap');
+			var prop = document.createElement('div');
+			var name = document.createElement('span');
+			var value = document.createElement('span');
+
+			var pmatch = property.match(/(^([a-z0-9\-]*)=\[([a-z0-9\-\"]*)\])|^([a-z0-9\-]*)/i);
+
+			name.textContent = '\t' + pmatch[4];
+
+			if (pmatch[3] !== undefined) {
+				name.textContent = '\t' + pmatch[2];
+				value.textContent = pmatch[3] + ';';
+			}
+
+			name.textContent += ': ';
+			prop.className = 'css-property';
+			name.className = 'name';
+			value.className = 'value';
+			prop.appendChild(name);
+			prop.appendChild(value);
+
+			classes[topic].node.appendChild(prop);
+			classes[topic].line[property] = prop;
+			classes[topic].prop[property] = value;
+		}
+
+		var OutputClass = function OutputClass(node) {
 			var topic = node.getAttribute('data-topic');
+			var prop = node.getAttribute('data-prop');
+			var name = node.getAttribute('data-name');
+			var properties = prop.split(' ');
 
-			this.min = min !== null ? min | 0 : 0;
-			this.max = max !== null ? max | 0 : 100;
-			this.step = step !== null && this.step > 0 ? step | 0 : 1;
-			this.value = value !== null && value > min && value < max ? value | 0 : 0;
-			this.snap = snap === "true" ? 1 : 0;
-			this.topic = topic;
-			this.node = node;
+			classes[topic] = {};
+			classes[topic].node = node;
+			classes[topic].prop = [];
+			classes[topic].line = [];
+			classes[topic].button = new Button(topic);
 
-			var pointer = document.createElement('div');
-			pointer.className = 'ui-slider-pointer';
-			node.appendChild(pointer);
-			this.pointer = pointer;
+			var open_decl = document.createElement('div');
+			var end_decl = document.createElement('div');
 
-			setMouseTracking(node, updateSlider.bind(this));
+			open_decl.textContent = name + ' {';
+			end_decl.textContent = '}';
+			node.appendChild(open_decl);
 
-			subscribers[topic] = [];
-			sliders[topic] = this;
-			setValue(topic, this.value);
+			for (var i in properties)
+				crateOutputNode(topic, properties[i]);
+
+			node.appendChild(end_decl);
 		}
 
-		var sliderComponent = function sliderComponent(node) {
-			var type = node.getAttribute('data-type');
-			var topic = node.getAttribute('data-topic');
-			if (type === "sub")
-				node.addEventListener("click", decrement.bind(sliders[topic]));
-			if (type === "add")
-				node.addEventListener("click", increment.bind(sliders[topic]));
+		var Button = function Button(topic) {
+			var button = document.createElement('div');
+
+			button.className = 'button';
+			button.textContent = topic;
+			button.style.left = button_offset + 'px';
+			button_offset += 100;
+
+			button.addEventListener("click", function() {
+				toggleDisplay(topic);
+			})
+
+			menu.appendChild(button);
+			return button;
 		}
 
-		var increment = function increment() {
-			if (this.value + this.step <= this.max) {
-				this.value += this.step;
-				setValue(this.topic, this.value)
-				notify.call(this);
+		var toggleDisplay = function toggleDisplay(topic) {
+			active.button.removeAttribute('data-active');
+			active.node.style.display = 'none';
+			active = classes[topic];
+			active.node.style.display = 'block';
+			active.button.setAttribute('data-active', 'true');
+		}
+
+		var toggleButton = function toggleButton(topic, value) {
+			var display = (value === true) ? 'block' : 'none';
+			classes[topic].button.style.display = display;
+
+			if (value === true)
+				toggleDisplay(topic);
+			else
+				toggleDisplay('element');
+		}
+
+		var updateProperty = function updateProperty(topic, property, data) {
+			try {
+				classes[topic].prop[property].textContent = data + ';';
 			}
-		};
-
-		var decrement = function decrement() {
-			if (this.value - this.step >= this.min) {
-				this.value -= this.step;
-				setValue(this.topic, this.value)
-				notify.call(this);
+			catch(error) {
+				// console.log("ERROR undefined : ", topic, property, data);
 			}
 		}
 
-		// this = Slider object
-		var updateSlider = function updateSlider(e) {
-			var node = this.node;
-			var pos = e.pageX - node.offsetLeft;
-			var width = node.clientWidth;
-			var delta = this.max - this.min;
-			var offset = this.pointer.clientWidth;
-
-			if (pos < 0) pos = 0;
-			if (pos > width) pos = width;
-
-			var value = pos * delta / width | 0;
-			var precision = value % this.step;
-			value = value - precision + this.min;
-			if (precision > this.step / 2)
-				value = value + this.step;
-
-			if (this.snap) {
-				pos =  (value - this.min) * width / delta;
+		var toggleProperty = function toggleProperty(topic, property, value) {
+			var display = (value === true) ? 'block' : 'none';
+			try {
+				classes[topic].line[property].style.display = display;
 			}
-
-			this.pointer.style.left = pos - offset/2 + "px";
-			this.value = value;
-			node.setAttribute('data-value', value);
-			notify.call(this);
-		}
-
-		var setValue = function setValue(topic, value) {
-			var slider = sliders[topic];
-
-			if (value > slider.max || value < slider.min)
-				return;
-
-			var delta = slider.max - slider.min;
-			var width = slider.node.clientWidth;
-			var offset = slider.pointer.clientWidth;
-			var pos =  (value - slider.min) * width / delta;
-			slider.value = value;
-			slider.pointer.style.left = pos - offset / 2 + "px";
-			slider.node.setAttribute('data-value', value);
-			notify.call(slider);
-		}
-
-		var setMouseTracking = function setMouseTracking(elem, callback) {
-			elem.addEventListener("mousedown", function(e) {
-				callback(e);
-				document.addEventListener("mousemove", callback);
-			});
-
-			document.addEventListener("mouseup", function(e) {
-				document.removeEventListener("mousemove", callback);
-			});
-		}
-
-		var subscribe = function subscribe(topic, callback) {
-			subscribers[topic].push(callback);
-		}
-
-		var unsubscribe = function unsubscribe(topic, callback) {
-			subscribers[topic].indexOf(callback);
-			subscribers[topic].splice(index, 1);
-		}
-
-		var notify = function notify() {
-			for (var i in subscribers[this.topic]) {
-				subscribers[this.topic][i](this.value);
+			catch(error) {
+				// console.log("ERROR undefined : ",classes, topic, property, value);
 			}
 		}
 
 		var init = function init() {
-			var elem = document.querySelectorAll('.ui-slider');
+
+			menu = getElemById('menu');
+
+			var elem = document.querySelectorAll('#output .output');
 			var size = elem.length;
 			for (var i = 0; i < size; i++)
-				new Slider(elem[i]);
+				OutputClass(elem[i]);
 
-			elem = document.querySelectorAll('.ui-slider-set');
-			size = elem.length;
-			for (var i = 0; i < size; i++)
-				sliderComponent(elem[i]);
+			active = classes['element'];
+			toggleDisplay('element');
 
-			elem = document.querySelectorAll('.ui-slider-get');
-			size = elem.length;
-			for (var i = 0; i < size; i++) {
-				var topic = elem[i].getAttribute('data-topic');
-				var unit = elem[i].getAttribute('data-unit');
-				unit = (unit !== null) ? unit : '';
-				subscribe(topic, function(value) {
-					this.textContent = value + unit;
-				}.bind(elem[i]));
-			}
+			ButtonManager.subscribe("before", function(value) {
+				toggleButton('before', value);
+			});
+
+			ButtonManager.subscribe("after", function(value) {
+				toggleButton('after', value);
+			});
 		}
 
 		return {
 			init : init,
-			setValue : setValue,
-			subscribe : subscribe,
-			unsubscribe : unsubscribe
+			updateProperty : updateProperty,
+			toggleProperty : toggleProperty
 		}
 
 	})();
+
 
 	/**
 	 * Init Tool
 	 */
 	var init = function init() {
+		ButtonManager.init();
+		OutputManager.init();
 		ColoPicker.init();
 		SliderManager.init();
 		LayerManager.init();
