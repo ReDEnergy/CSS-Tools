@@ -1,0 +1,70 @@
+/*
+ * UI Component
+ */
+
+.ui-input-slider-container {
+	height: 20px;
+	margin: 10px 0;
+	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+.ui-input-slider-container * {
+	float: left;
+	height: 100%;
+	line-height: 100%;
+}
+
+/* Input Slider */
+
+.ui-input-slider > input {
+	margin: 0;
+	padding: 0;
+	width: 50px;
+	text-align: center;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.ui-input-slider-info {
+	width: 90px;
+	padding: 0px 10px 0px 0px;
+	text-align: right;
+	text-transform: lowercase;
+}
+
+.ui-input-slider-left, .ui-input-slider-right {
+	width: 16px;
+	cursor: pointer;
+	background: url("arrows.png") center left no-repeat;
+}
+
+.ui-input-slider-right {
+	background: url("arrows.png") center right no-repeat;
+}
+
+.ui-input-slider-name {
+	width: 90px;
+	padding: 0 10px 0 0;
+	text-align: right;
+	text-transform: lowercase;
+}
+
+.ui-input-slider-btn-set {
+	width: 25px;
+	background-color: #2C9FC9;
+	border-radius: 5px;
+	color: #FFF;
+	font-weight: bold;
+	line-height: 14px;
+	text-align: center;
+}
+
+.ui-input-slider-btn-set:hover {
+	background-color: #379B4A;
+	cursor: pointer;
+}
+
