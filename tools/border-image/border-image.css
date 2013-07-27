@@ -45,14 +45,14 @@ body {
 	min-width: 320px;
 	min-height: 180px;
 	padding: 10% 20px;
-	
+
 	text-align: center;
-	
-	border-image-source: url("../images/colored_stars.jpg");
+
+	border-image-source: url("images/colored_stars.jpg");
 	border-image-width: 30px;
 	border-image-repeat: round;
 	border-image-slice: 20% 10%;
-	
+
 	float: left;
 	resize: both;
 	overflow: auto;
