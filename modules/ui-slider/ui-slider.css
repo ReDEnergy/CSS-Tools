@@ -1,0 +1,77 @@
+/*
+ * UI Slider
+ */
+
+.slidergroup {
+	height: 20px;
+	margin: 10px 0;
+	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+.slidergroup * {
+	float: left;
+	height: 100%;
+	line-height: 100%;
+}
+
+/* Slider */
+
+.ui-slider {
+	height: 10px;
+	width: 200px;
+	margin: 4px 10px;
+	display: block;
+	border: 1px solid #999;
+	border-radius: 3px;
+	background: #EEE;
+}
+
+.ui-slider:hover {
+	cursor: pointer;
+}
+
+.ui-slider-name {
+	width: 90px;
+	padding: 0 10px 0 0;
+	text-align: right;
+	text-transform: lowercase;
+}
+
+.ui-slider-pointer {
+	width: 13px;
+	height: 13px;
+	background-color: #EEE;
+	border: 1px solid #2C9FC9;
+	border-radius: 3px;
+	position: relative;
+	top: -3px;
+	left: 0%;
+}
+
+.ui-slider-btn-set {
+	width: 25px;
+	background-color: #2C9FC9;
+	border-radius: 3px;
+	color: #FFF;
+	font-weight: bold;
+	line-height: 14px;
+	text-align: center;
+}
+
+.ui-slider-btn-set:hover {
+	background-color: #379B4A;
+	cursor: pointer;
+}
+
+.ui-slider-input > input {
+	margin: 0 10px;
+	padding: 0;
+	width: 50px;
+	text-align: center;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
