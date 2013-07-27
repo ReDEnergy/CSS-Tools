@@ -32,4 +32,46 @@ var Observer = (function Observer() {
 		subscribe : subscribe,
 		unsubscribe : unsubscribe
 	}
-})()
+})();
+
+
+/*
+ * EventManager
+ */
+var EventManager = (function EventManager() {
+
+	var subscribers = [];
+
+	var subscribe = function subscribe(event, callback) {
+		if (subscribers[event] === undefined)
+			subscribers[event] = [];
+
+		subscribers[event].push(callback);
+	}
+
+	var unsubscribe = function unsubscribe(event, callback) {
+		subscribers[event].indexOf(callback);
+		subscribers[event].splice(index, 1);
+	}
+
+	var trigger = function trigger(event, value) {
+		if (subscribers[event] === undefined)
+			return;
+
+		for (var i in subscribers[event]) {
+			subscribers[event][i](value);
+		}
+	}
+
+	var init = function init() {
+	}
+
+	return {
+		init : init,
+		trigger : trigger,
+		subscribe : subscribe,
+		unsubscribe : unsubscribe
+	}
+});
+
+
