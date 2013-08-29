@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<title> Dropdown Select </title>
+	<link href="ui-dropdown.css" rel="stylesheet"/>
+	<script src="ui-dropdown.js"></script>
+
+</head>
+
+<style type="text/css">
+	body {
+		width: 500px;
+		height: 500px;
+		margin: 30px auto;
+	}
+</style>
+
+<body>
+	<div class="ui-dropdown" data-topic="demo" data-value="">
+		<div> option 1 </div>
+		<div> option 2 </div>
+		<div> option 3 </div>
+		<div> option 4 </div>
+		<div> option 5 </div>
+		<div> option 6 </div>
+	</div>
+</body>
+
+	<script type="text/javascript">
+		window.onload = function () {
+			DropDownManager.init();
+		};
+	</script>
+</html>
