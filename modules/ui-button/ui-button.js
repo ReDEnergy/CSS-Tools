@@ -45,53 +45,52 @@ var ButtonManager = (function CheckBoxManager() {
 		}.bind(this));
 
 		buttons[topic] = this;
-	}
+	};
 
 	var getNode =  function getNode(topic) {
 		return buttons[topic].node;
-	}
+	};
 
 	var setValue = function setValue(topic, value) {
-		try {
-			buttons[topic].checkbox.checked = value;
-			notify.call(buttons[topic]);
-		}
-		catch(error) {
-			console.log(error, topic, value);
-		}
-	}
+		var obj = buttons[topic];
+		if (obj === undefined)
+			return;
+
+		obj.checkbox.checked = value;
+		notify.call(obj);
+	};
 
 	var subscribe = function subscribe(topic, callback) {
 		if (subscribers[topic] === undefined)
 			subscribers[topic] = [];
 
 		subscribers[topic].push(callback);
-	}
+	};
 
 	var unsubscribe = function unsubscribe(topic, callback) {
 		subscribers[topic].indexOf(callback);
 		subscribers[topic].splice(index, 1);
-	}
+	};
 
 	var notify = function notify() {
 		if (subscribers[this.topic] === undefined)
 			return;
 		for (var i = 0; i < subscribers[this.topic].length; i++)
 			subscribers[this.topic][i](this.checkbox.checked);
-	}
+	};
 
 	var init = function init() {
 		var elem = document.querySelectorAll('.ui-checkbox');
 		var size = elem.length;
 		for (var i = 0; i < size; i++)
 			new CheckBox(elem[i]);
-	}
+	};
 
 	return {
 		init : init,
 		setValue : setValue,
 		subscribe : subscribe,
 		unsubscribe : unsubscribe
-	}
+	};
 
 })();
