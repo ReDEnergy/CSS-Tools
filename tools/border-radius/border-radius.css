@@ -1,3 +1,7 @@
+/*
+ * BORDER RADIUS GENERATOR TOOL
+ */
+
 body {
 	max-width: 1000px;
 	margin: 0 auto;
@@ -251,11 +255,11 @@ body {
 	visibility: hidden;
 }
 
-#preview .ui-input-slider-container:hover .ui-input-slider-left {
+#preview .ui-input-slider:hover .ui-input-slider-left {
 	visibility: visible;
 }
 
-#preview .ui-input-slider-container:hover .ui-input-slider-right {
+#preview .ui-input-slider:hover .ui-input-slider-right {
 	visibility: visible;
 }
 

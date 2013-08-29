@@ -23,7 +23,7 @@ var BorderRadius = (function BorderRadius() {
 			var elem = getElemById(id);
 			elem.addEventListener('mousedown', dragStart, false);
 			document.addEventListener('mouseup', dragEnd, false);
-		}
+		};
 
 		var dragStart = function dragStart(e) {
 			if (e.button !== 0)
@@ -33,7 +33,7 @@ var BorderRadius = (function BorderRadius() {
 			lastX = e.clientX;
 			lastY = e.clientY;
 			document.addEventListener('mousemove', mouseDrag, false);
-		}
+		};
 
 		var dragEnd = function dragEnd(e) {
 			if (e.button !== 0)
@@ -43,33 +43,33 @@ var BorderRadius = (function BorderRadius() {
 				active = false;
 				document.removeEventListener('mousemove', mouseDrag, false);
 			}
-		}
+		};
 
 		var mouseDrag = function mouseDrag(e) {
 			notify(e.clientX - lastX, e.clientY - lastY);
 			lastX = e.clientX;
 			lastY = e.clientY;
-		}
+		};
 
 		var subscribe = function subscribe(callback) {
 			subscribers.push(callback);
-		}
+		};
 
 		var unsubscribe = function unsubscribe(callback) {
 			var index = subscribers.indexOf(callback);
 			subscribers.splice(index, 1);
-		}
+		};
 
 		var notify = function notify(deltaX, deltaY) {
 			for (var i in subscribers)
 				subscribers[i](deltaX, deltaY);
-		}
+		};
 
 		return {
 			init : init,
 			subscribe : subscribe,
 			unsubscribe : unsubscribe
-		}
+		};
 
 	})();
 
@@ -90,11 +90,11 @@ var BorderRadius = (function BorderRadius() {
 
 		this.container.className = 'dropdown ' + 'unit-' + topic;
 		this.container.appendChild(this.select);
-	}
+	};
 
 	UnitSelector.prototype.setValue = function setValue(value) {
 		this.salect.value = value;
-	}
+	};
 
 
 	var RadiusContainer = function RadiusContainer(node) {
@@ -217,40 +217,40 @@ var BorderRadius = (function BorderRadius() {
 		}.bind(this));
 
 		this.updateBorderRadius();
-	}
+	};
 
 	RadiusContainer.prototype.updateWidth = function updateWidth() {
 		this.node.style.width = this.width + units[this.unitX];
 		var value = Math.round(this.width / 2);
 		InputSliderManager.setValue(this.topic + '-w', value, false);
-	}
+	};
 
 	RadiusContainer.prototype.updateHeight = function updateHeight() {
 		this.node.style.height = this.height + units[this.unitY];
 		var value = Math.round(this.height / 2);
 		InputSliderManager.setValue(this.topic + '-h', value, false);
-	}
+	};
 
 	RadiusContainer.prototype.updateRadius = function updateRadius() {
 		var value = Math.round(this.size / 2);
 		this.node.style.width = this.size + units[this.unitR];
 		this.node.style.height = this.size + units[this.unitR];
 		InputSliderManager.setValue(this.topic, value, false);
-	}
+	};
 
 	RadiusContainer.prototype.setWidth = function setWidth(value) {
 		this.radius.style.display = 'block';
 		this.width = 2 * value;
 		this.node.style.width = this.width + units[this.unitX];
 		this.updateBorderRadius();
-	}
+	};
 
 	RadiusContainer.prototype.setHeight = function setHeight(value) {
 		this.radius.style.display = 'block';
 		this.height = 2 * value;
 		this.node.style.height = this.height + units[this.unitY];
 		this.updateBorderRadius();
-	}
+	};
 
 	RadiusContainer.prototype.setRadius = function setRadius(value) {
 		this.radius.style.display = 'block';
@@ -258,7 +258,7 @@ var BorderRadius = (function BorderRadius() {
 		this.node.style.width = this.size + units[this.unitR];
 		this.node.style.height = this.size + units[this.unitR];
 		this.updateBorderRadius();
-	}
+	};
 
 	RadiusContainer.prototype.setUnitX = function setUnitX(value) {
 		this.unitX = value;
@@ -266,7 +266,7 @@ var BorderRadius = (function BorderRadius() {
 		if (this.unitX === 1) this.maxW = 200;
 		InputSliderManager.setUnit(this.topic + '-w', units[this.unitX]);
 		InputSliderManager.setMax(this.topic + '-w', this.maxW / 2);
-	}
+	};
 
 	RadiusContainer.prototype.setUnitY = function setUnitY(value) {
 		this.unitY = value;
@@ -274,7 +274,7 @@ var BorderRadius = (function BorderRadius() {
 		if (this.unitY === 1) this.maxH = 200;
 		InputSliderManager.setUnit(this.topic + '-h', units[this.unitY]);
 		InputSliderManager.setMax(this.topic + '-h', this.maxH / 2);
-	}
+	};
 
 	RadiusContainer.prototype.setUnitR = function setUnitR(value) {
 		this.unitR = value;
@@ -287,7 +287,7 @@ var BorderRadius = (function BorderRadius() {
 
 		InputSliderManager.setUnit(this.topic, units[this.unitR]);
 		InputSliderManager.setMax(this.topic, this.maxR / 2);
-	}
+	};
 
 	RadiusContainer.prototype.updateUnits = function updateUnits(unit) {
 		if (this.rounded) {
@@ -300,7 +300,7 @@ var BorderRadius = (function BorderRadius() {
 
 		if (unit === 1)
 			this.setUnitY(this.unitY);
-	}
+	};
 
 	RadiusContainer.prototype.composeBorderRadius = function composeBorderRadius () {
 
@@ -319,7 +319,7 @@ var BorderRadius = (function BorderRadius() {
 			return valueX + unitX;
 
 		return valueX + unitX + ' ' + valueY + unitY;
-	}
+	};
 
 	RadiusContainer.prototype.updateBorderRadius = function updateBorderRadius () {
 		var radius = this.composeBorderRadius();
@@ -346,7 +346,7 @@ var BorderRadius = (function BorderRadius() {
 		}
 
 		Tool.updateOutput(corner, radius);
-	}
+	};
 
 	RadiusContainer.prototype.updateContainer = function updateContainer(deltaX, deltaY) {
 
@@ -375,7 +375,7 @@ var BorderRadius = (function BorderRadius() {
 
 		if (deltaX || deltaY)
 			this.updateBorderRadius();
-	}
+	};
 
 
 	/**
@@ -396,7 +396,7 @@ var BorderRadius = (function BorderRadius() {
 
 			for (var i = 0; i < 4; i++)
 				radius_containers[i].updateUnits(0);
-		}
+		};
 
 		var updateUIHeight = function updateUIHeight(value) {
 			var pheight = subject.parentElement.clientHeight;
@@ -406,21 +406,21 @@ var BorderRadius = (function BorderRadius() {
 
 			for (var i = 0; i < 4; i++)
 				radius_containers[i].updateUnits(1);
-		}
+		};
 
 		var updatePreviewUIWidth = function updatePreviewUIWidth() {
 			var p = subject.parentElement.clientWidth;
 			var v = preview_ui.clientWidth;
 			console.log(p, v, (p - v ) / 2);
 			preview_ui.style.left = (p - v) / 2 + "px" ;
-		}
+		};
 
 		var updatePreviewUIHeight = function updatePreviewUIHeight() {
 			var p = subject.parentElement.clientHeight;
 			var v = preview_ui.clientHeight;
 			console.log(p, v, (p - v ) / 2);
 			preview_ui.style.top = (p - v) / 2 + "px" ;
-		}
+		};
 
 		var updateOutput = function updateOutput(corner, radius) {
 			var values = radius.split(" ");
@@ -440,7 +440,7 @@ var BorderRadius = (function BorderRadius() {
 
 			border_radius += ';';
 			output.textContent = border_radius;
-		}
+		};
 
 		var init = function init() {
 			preview = getElemById("preview");
@@ -458,12 +458,12 @@ var BorderRadius = (function BorderRadius() {
 
 			InputSliderManager.setValue("width", subject.clientWidth);
 			InputSliderManager.setValue("height", subject.clientHeight);
-		}
+		};
 
 		return {
 			init : init,
 			updateOutput : updateOutput
-		}
+		};
 
 	})();
 
@@ -475,11 +475,11 @@ var BorderRadius = (function BorderRadius() {
 		InputSliderManager.init();
 		PreviewMouseTracking.init("preview");
 		Tool.init();
-	}
+	};
 
 	return {
 		init : init
-	}
+	};
 
 })();
 
