@@ -37,7 +37,7 @@ var BoxShadow = (function BoxShadow() {
 		this.hue = obj.hue;
 		this.saturation = obj.saturation;
 		this.value = obj.value;
-	}
+	};
 
 	Color.prototype.setRGBA = function setRGBA(red, green, blue, alpha) {
 		if (red != undefined)
@@ -48,7 +48,7 @@ var BoxShadow = (function BoxShadow() {
 			this.b = blue | 0;
 		if (alpha != undefined)
 			this.a = alpha | 0;
-	}
+	};
 
 	/**
 	 * HSV/HSB (hue, saturation, value / brightness)
@@ -61,7 +61,7 @@ var BoxShadow = (function BoxShadow() {
 		this.saturation = saturation;
 		this.value = value;
 		this.updateRGB();
-	}
+	};
 
 	Color.prototype.updateRGB = function updateRGB() {
 		var sat = this.saturation / 100;
@@ -82,7 +82,7 @@ var BoxShadow = (function BoxShadow() {
 		if (H >= 3 && H < 4) {	this.setRGBA(m, X, C);	return; }
 		if (H >= 4 && H < 5) {	this.setRGBA(X, m, C);	return; }
 		if (H >= 5 && H < 6) {	this.setRGBA(C, m, X);	return; }
-	}
+	};
 
 	Color.prototype.updateHSV = function updateHSV() {
 		var red		= this.r / 255;
@@ -106,10 +106,11 @@ var BoxShadow = (function BoxShadow() {
 		if (this.hue < 0) this.hue += 360;
 		this.saturation = (saturation * 100) | 0;
 		this.value = (cmax * 100) | 0;
-	}
+	};
 
 	Color.prototype.setHexa = function setHexa(value) {
-		var valid  = /(^#{0,1}[0-9A-F]{6}$)|(^#{0,1}[0-9A-F]{3}$)/i.test(value)
+		var valid  = /(^#{0,1}[0-9A-F]{6}$)|(^#{0,1}[0-9A-F]{3}$)/i.test(value);
+
 		if (valid !== true)
 			return;
 
@@ -124,7 +125,7 @@ var BoxShadow = (function BoxShadow() {
 		this.b = parseInt(value.substr(4, 2), 16);
 
 		this.alpha	= 1;
-	}
+	};
 
 	Color.prototype.getHexa = function getHexa() {
 		var r = this.r.toString(16);
@@ -135,7 +136,7 @@ var BoxShadow = (function BoxShadow() {
 		if (this.b < 16) b = '0' + b;
 		var value = '#' + r + g + b;
 		return value.toUpperCase();
-	}
+	};
 
 	Color.prototype.getRGBA = function getRGBA() {
 
@@ -149,13 +150,13 @@ var BoxShadow = (function BoxShadow() {
 
 		var value = "rgb" + a + rgb + v + ")";
 		return value;
-	}
+	};
 
 	Color.prototype.getColor = function getColor() {
 		if (this.a | 0 === 1)
 			return this.getHexa();
 		return this.getRGBA();
-	}
+	};
 
 	/**
 	 * Shadow Object
@@ -185,14 +186,14 @@ var BoxShadow = (function BoxShadow() {
 		value += this.color.getColor();
 
 		return value;
-	}
+	};
 
 	Shadow.prototype.toggleInset = function toggleInset(value) {
 		if (value !== undefined || typeof value === "boolean")
 			this.inset = value;
 		else
 			this.inset = this.inset === true ? false : true;
-	}
+	};
 
 	Shadow.prototype.copy = function copy(obj) {
 		if(obj instanceof Shadow !== true) {
@@ -206,7 +207,7 @@ var BoxShadow = (function BoxShadow() {
 		this.blur   = obj.blur;
 		this.spread = obj.spread;
 		this.color.copy(obj.color);
-	}
+	};
 
 	/**
 	 * Color Picker
@@ -251,7 +252,7 @@ var BoxShadow = (function BoxShadow() {
 			// color pointer location
 			updateUI();
 			notify("color", color);
-		}
+		};
 
 		var updateHue = function updateHue(e) {
 			var x = e.pageX - hue_area.offsetLeft;
@@ -271,7 +272,7 @@ var BoxShadow = (function BoxShadow() {
 			// alpha area background
 			updateUI();
 			notify("color", color);
-		}
+		};
 
 		var updateAlpha = function updateAlpha(e) {
 			var x = e.pageX - alpha_area.offsetLeft;
@@ -286,7 +287,7 @@ var BoxShadow = (function BoxShadow() {
 			// alpha pointer location
 			updateUI();
 			notify("color", color);
-		}
+		};
 
 		var setHueGfx = function setHueGfx(hue) {
 			var sat = color.saturation;
@@ -304,7 +305,7 @@ var BoxShadow = (function BoxShadow() {
 
 			var gradient = '-moz-linear-gradient(left, ' +	start + '0%, ' + end + ' 100%)';
 			alpha_area.style.background = gradient;
-		}
+		};
 
 		var updateUI = function updateUI() {
 			var x, y;		// coordinates
@@ -360,7 +361,7 @@ var BoxShadow = (function BoxShadow() {
 			notify("a", color.a);
 			notify("hexa", color.getHexa());
 			output_color.style.backgroundColor = color.getRGBA();
-		}
+		};
 
 		var setInputComponent = function setInputComponent(node) {
 			var topic = node.getAttribute('data-topic');
@@ -395,7 +396,7 @@ var BoxShadow = (function BoxShadow() {
 			subscribe(topic, function(value) {
 				node.children[1].value = value;
 			});
-		}
+		};
 
 		var inputChangeHSV = function actionHSV(topic) {
 			var selector = "[data-action='set-HSV-" + topic + "']";
@@ -408,7 +409,7 @@ var BoxShadow = (function BoxShadow() {
 
 			color.updateRGB();
 			updateUI();
-		}
+		};
 
 		var inputChangeRGB = function inputChangeRGB(topic) {
 			var selector = "[data-action='set-RGB-" + topic + "']";
@@ -421,7 +422,7 @@ var BoxShadow = (function BoxShadow() {
 
 			color.updateHSV();
 			updateUI();
-		}
+		};
 
 		var inputChangeAlpha = function inputChangeAlpha(topic) {
 			var selector = "[data-action='set-alpha-" + topic + "']";
@@ -433,7 +434,7 @@ var BoxShadow = (function BoxShadow() {
 				color.a = value.toFixed(2);
 
 			updateUI();
-		}
+		};
 
 		var inputChangeHexa = function inputChangeHexa(topic) {
 			var selector = "[data-action='set-hexa-" + topic + "']";
@@ -442,7 +443,7 @@ var BoxShadow = (function BoxShadow() {
 			color.setHexa(value);
 			color.updateHSV();
 			updateUI();
-		}
+		};
 
 		var setMouseTracking = function setMouseTracking(elem, callback) {
 
@@ -454,7 +455,7 @@ var BoxShadow = (function BoxShadow() {
 			document.addEventListener("mouseup", function(e) {
 				document.removeEventListener("mousemove", callback);
 			});
-		}
+		};
 
 		/*
 		 * Observer
@@ -466,24 +467,24 @@ var BoxShadow = (function BoxShadow() {
 			}
 			color.copy(obj);
 			updateUI();
-		}
+		};
 
 		var subscribe = function subscribe(topic, callback) {
 			if (subscribers[topic] === undefined)
 				subscribers[topic] = [];
 
 			subscribers[topic].push(callback);
-		}
+		};
 
 		var unsubscribe = function unsubscribe(callback) {
 			subscribers.indexOf(callback);
 			subscribers.splice(index, 1);
-		}
+		};
 
 		var notify = function notify(topic, value) {
 			for (var i in subscribers[topic])
 				subscribers[topic][i](value);
-		}
+		};
 
 		var init = function init() {
 			colorpicker		= getElemById("colorpicker");
@@ -504,14 +505,14 @@ var BoxShadow = (function BoxShadow() {
 			setMouseTracking(hue_area, updateHue);
 			setMouseTracking(alpha_area, updateAlpha);
 
-		}
+		};
 
 		return {
 			init : init,
 			setColor : setColor,
 			subscribe : subscribe,
 			unsubscribe : unsubscribe
-		}
+		};
 
 	})();
 
@@ -528,7 +529,7 @@ var BoxShadow = (function BoxShadow() {
 			var elem = getElemById(id);
 			elem.addEventListener('mousedown', dragStart, false);
 			document.addEventListener('mouseup', dragEnd, false);
-		}
+		};
 
 		var dragStart = function dragStart(e) {
 			if (e.button !== 0)
@@ -538,7 +539,7 @@ var BoxShadow = (function BoxShadow() {
 			lastX = e.clientX;
 			lastY = e.clientY;
 			document.addEventListener('mousemove', mouseDrag, false);
-		}
+		};
 
 		var dragEnd = function dragEnd(e) {
 			if (e.button !== 0)
@@ -548,33 +549,33 @@ var BoxShadow = (function BoxShadow() {
 				active = false;
 				document.removeEventListener('mousemove', mouseDrag, false);
 			}
-		}
+		};
 
 		var mouseDrag = function mouseDrag(e) {
 			notify(e.clientX - lastX, e.clientY - lastY);
 			lastX = e.clientX;
 			lastY = e.clientY;
-		}
+		};
 
 		var subscribe = function subscribe(callback) {
 			subscribers.push(callback);
-		}
+		};
 
 		var unsubscribe = function unsubscribe(callback) {
 			var index = subscribers.indexOf(callback);
 			subscribers.splice(index, 1);
-		}
+		};
 
 		var notify = function notify(deltaX, deltaY) {
 			for (var i in subscribers)
 				subscribers[i](deltaX, deltaY);
-		}
+		};
 
 		return {
 			init : init,
 			subscribe : subscribe,
 			unsubscribe : unsubscribe
-		}
+		};
 
 	})();
 
@@ -595,10 +596,10 @@ var BoxShadow = (function BoxShadow() {
 		this.node = getElemById('obj-' + id);
 		this.object = getElemById(id);
 		this.shadowID = null;
-		this.shadows = []
+		this.shadows = [];
 		this.render = [];
 		this.init();
-	}
+	};
 
 	CssClass.prototype.init = function init() {
 		this.left = ((this.node.parentNode.clientWidth - this.node.clientWidth) / 2) | 0;
@@ -610,7 +611,7 @@ var BoxShadow = (function BoxShadow() {
 		this.setWidth(this.width);
 		this.bgcolor.setHSV(0, 0, 100);
 		this.updateBgColor(this.bgcolor);
-	}
+	};
 
 	CssClass.prototype.updatePos = function updatePos(deltaX, deltaY) {
 		this.left += deltaX;
@@ -619,31 +620,31 @@ var BoxShadow = (function BoxShadow() {
 		this.node.style.left = this.left + "px";
 		SliderManager.setValue("left", this.left);
 		SliderManager.setValue("top", this.top);
-	}
+	};
 
 	CssClass.prototype.setLeft = function setLeft(value) {
 		this.left = value;
 		this.node.style.left = this.left + "px";
 		OutputManager.updateProperty(this.id, 'left', this.left + 'px');
-	}
+	};
 
 	CssClass.prototype.setTop = function setTop(value) {
 		this.top = value;
 		this.node.style.top = this.top + 'px';
 		OutputManager.updateProperty(this.id, 'top', this.top + 'px');
-	}
+	};
 
 	CssClass.prototype.setWidth = function setWidth(value) {
 		this.width = value;
 		this.node.style.width = this.width + 'px';
 		OutputManager.updateProperty(this.id, 'width', this.width + 'px');
-	}
+	};
 
 	CssClass.prototype.setHeight = function setHeight(value) {
 		this.height = value;
 		this.node.style.height = this.height + 'px';
 		OutputManager.updateProperty(this.id, 'height', this.height + 'px');
-	}
+	};
 
 	// Browser support
 	CssClass.prototype.setRotate = function setRotate(value) {
@@ -670,13 +671,13 @@ var BoxShadow = (function BoxShadow() {
 		OutputManager.updateProperty(this.id, '-webkit-transform', cssvalue);
 		OutputManager.updateProperty(this.id, '-ms-transform', cssvalue);
 		this.rotate = value;
-	}
+	};
 
 	CssClass.prototype.setzIndex = function setzIndex(value) {
 		this.node.style.zIndex = value;
 		OutputManager.updateProperty(this.id, 'z-index', value);
 		this.zIndex = value;
-	}
+	};
 
 	CssClass.prototype.toggleDisplay = function toggleDisplay(value) {
 		if (typeof value !== "boolean" || this.display === value)
@@ -686,7 +687,7 @@ var BoxShadow = (function BoxShadow() {
 		var display = this.display === true ? "block" : "none";
 		this.node.style.display = display;
 		this.object.style.display = display;
-	}
+	};
 
 	CssClass.prototype.toggleBorder = function toggleBorder(value) {
 		if (typeof value !== "boolean" || this.border === value)
@@ -695,13 +696,13 @@ var BoxShadow = (function BoxShadow() {
 		this.border = value;
 		var border = this.border === true ? "1px solid #CCC" : "none";
 		this.node.style.border = border;
-	}
+	};
 
 	CssClass.prototype.updateBgColor = function updateBgColor(color) {
 		this.bgcolor.copy(color);
 		this.node.style.backgroundColor = color.getColor();
 		OutputManager.updateProperty(this.id, 'background-color', color.getColor());
-	}
+	};
 
 	CssClass.prototype.updateShadows = function updateShadows() {
 		if (this.render.length === 0)
@@ -712,7 +713,7 @@ var BoxShadow = (function BoxShadow() {
 		this.node.style.boxShadow = this.render.join(", ");
 		OutputManager.updateProperty(this.id, 'box-shadow', this.render.join(", \n"));
 
-	}
+	};
 
 
 	/**
@@ -730,7 +731,7 @@ var BoxShadow = (function BoxShadow() {
 		 */
 		var addCssClass = function addCssClass(id) {
 			classes[id] = new CssClass(id);
-		}
+		};
 
 		var setActiveClass = function setActiveClass(id) {
 			active = classes[id];
@@ -744,12 +745,12 @@ var BoxShadow = (function BoxShadow() {
 			SliderManager.setValue("height", active.height);
 			ButtonManager.setValue("border-state", active.border);
 			active.updateShadows();
-		}
+		};
 
 		var disableClass = function disableClass(topic) {
 			classes[topic].toggleDisplay(false);
 			ButtonManager.setValue(topic, false);
-		}
+		};
 
 		var addShadow = function addShadow(position) {
 			if (animate === true)
@@ -757,7 +758,7 @@ var BoxShadow = (function BoxShadow() {
 
 			active.shadows.splice(position, 0, new Shadow());
 			active.render.splice(position, 0, null);
-		}
+		};
 
 		var swapShadow = function swapShadow(id1, id2) {
 			var x = active.shadows[id1];
@@ -765,13 +766,13 @@ var BoxShadow = (function BoxShadow() {
 			active.shadows[id2] = x;
 			updateShadowCSS(id1);
 			updateShadowCSS(id2);
-		}
+		};
 
 		var deleteShadow = function deleteShadow(position) {
 			active.shadows.splice(position, 1);
 			active.render.splice(position, 1);
 			active.updateShadows();
-		}
+		};
 
 		var setActiveShadow = function setActiveShadow(id, glow) {
 			active.shadowID = id;
@@ -783,7 +784,7 @@ var BoxShadow = (function BoxShadow() {
 			SliderManager.setValue("posY", active.shadows[id].posY);
 			if (glow === true)
 				addGlowEffect(id);
-		}
+		};
 
 		var addGlowEffect = function addGlowEffect(id) {
 			if (animate === true)
@@ -809,14 +810,14 @@ var BoxShadow = (function BoxShadow() {
 					animate = false;
 				}, 100);
 			}, 200);
-		}
+		};
 
 		var updateActivePos = function updateActivePos(deltaX, deltaY) {
 			if (active.shadowID === null)
 				active.updatePos(deltaX, deltaY);
 			else
 				updateShadowPos(deltaX, deltaY);
-		}
+		};
 
 		/*
 		 * Shadow properties
@@ -824,14 +825,14 @@ var BoxShadow = (function BoxShadow() {
 		var updateShadowCSS = function updateShadowCSS(id) {
 			active.render[id] = active.shadows[id].computeCSS();
 			active.updateShadows();
-		}
+		};
 
 		var toggleShadowInset = function toggleShadowInset(value) {
 			if (active.shadowID === null)
 				return;
 			active.shadows[active.shadowID].toggleInset(value);
 			updateShadowCSS(active.shadowID);
-		}
+		};
 
 		var updateShadowPos = function updateShadowPos(deltaX, deltaY) {
 			var shadow = active.shadows[active.shadowID];
@@ -840,40 +841,40 @@ var BoxShadow = (function BoxShadow() {
 			SliderManager.setValue("posX", shadow.posX);
 			SliderManager.setValue("posY", shadow.posY);
 			updateShadowCSS(active.shadowID);
-		}
+		};
 
 		var setShadowPosX = function setShadowPosX(value) {
 			if (active.shadowID === null)
 				return;
 			active.shadows[active.shadowID].posX = value;
 			updateShadowCSS(active.shadowID);
-		}
+		};
 
 		var setShadowPosY = function setShadowPosY(value) {
 			if (active.shadowID === null)
 				return;
 			active.shadows[active.shadowID].posY = value;
 			updateShadowCSS(active.shadowID);
-		}
+		};
 
 		var setShadowBlur = function setShadowBlur(value) {
 			if (active.shadowID === null)
 				return;
 			active.shadows[active.shadowID].blur = value;
 			updateShadowCSS(active.shadowID);
-		}
+		};
 
 		var setShadowSpread = function setShadowSpread(value) {
 			if (active.shadowID === null)
 				return;
 			active.shadows[active.shadowID].spread = value;
 			updateShadowCSS(active.shadowID);
-		}
+		};
 
 		var updateShadowColor = function updateShadowColor(color) {
 			active.shadows[active.shadowID].color.copy(color);
 			updateShadowCSS(active.shadowID);
-		}
+		};
 
 		/*
 		 * Element Properties
@@ -883,7 +884,7 @@ var BoxShadow = (function BoxShadow() {
 				active.updateBgColor(color);
 			else
 				updateShadowColor(color);
-		}
+		};
 
 		var init = function init() {
 			preview = getElemById("preview");
@@ -918,11 +919,11 @@ var BoxShadow = (function BoxShadow() {
 			});
 
 			SliderManager.subscribe("width", function(value) {
-				active.setWidth(value)
+				active.setWidth(value);
 			});
 
 			SliderManager.subscribe("height", function(value) {
-				active.setHeight(value)
+				active.setHeight(value);
 			});
 
 			// Actions
@@ -942,7 +943,7 @@ var BoxShadow = (function BoxShadow() {
 				active.toggleBorder(value);
 			});
 
-		}
+		};
 
 		return {
 			init 			: init,
@@ -953,7 +954,7 @@ var BoxShadow = (function BoxShadow() {
 			deleteShadow	: deleteShadow,
 			setActiveClass	: setActiveClass,
 			setActiveShadow : setActiveShadow
-		}
+		};
 
 	})();
 
@@ -965,7 +966,7 @@ var BoxShadow = (function BoxShadow() {
 		var active = {
 			node : null,
 			stack : null
-		}
+		};
 		var elements = {};
 
 		var mouseEvents = function mouseEvents(e) {
@@ -994,13 +995,13 @@ var BoxShadow = (function BoxShadow() {
 
 			if (type === 'move-down')
 				active.stack.moveLayer(-1);
-		}
+		};
 
 		var setActiveStack = function setActiveStack(stackObj) {
 			active.stack.hide();
 			active.stack = stackObj;
 			active.stack.show();
-		}
+		};
 
 		/*
 		 * Stack object
@@ -1026,7 +1027,7 @@ var BoxShadow = (function BoxShadow() {
 			this.count = 0;
 			this.layer = null;
 			this.layerID = 0;
-		}
+		};
 
 		Stack.prototype.addLayer = function addLayer() {
 			if (Tool.addShadow(this.layerID) == -1)
@@ -1042,7 +1043,7 @@ var BoxShadow = (function BoxShadow() {
 			this.order.splice(this.layerID, 0, uid);
 			this.count++;
 			this.setActiveLayer(layer);
-		}
+		};
 
 		Stack.prototype.createLayer = function createLayer(uid) {
 			var layer = document.createElement('div');
@@ -1058,11 +1059,11 @@ var BoxShadow = (function BoxShadow() {
 
 			layer.appendChild(del);
 			return layer;
-		}
+		};
 
 		Stack.prototype.getUID = function getUID() {
 			return this.uid++;
-		}
+		};
 
 		// SOLVE IE BUG
 		Stack.prototype.moveLayer = function moveLayer(direction) {
@@ -1093,13 +1094,13 @@ var BoxShadow = (function BoxShadow() {
 				this.stack.insertBefore(this.layer, this.stack.children[this.layerID]);
 				Tool.setActiveShadow(this.layerID, false);
 			}
-		}
+		};
 
 		Stack.prototype.swapOrder = function swapOrder(pos1, pos2) {
 			var x = this.order[pos1];
 			this.order[pos1] = this.order[pos2];
 			this.order[pos2] = x;
-		}
+		};
 
 		Stack.prototype.deleteLayer = function deleteLayer(node) {
 			var shadowID =  node.getAttribute('data-shid') | 0;
@@ -1129,7 +1130,7 @@ var BoxShadow = (function BoxShadow() {
 				Tool.setActiveShadow(this.layerID, true);
 			}
 
-		}
+		};
 
 		Stack.prototype.setActiveLayer = function setActiveLayer(node) {
 			elements.shadow_properties.style.display = 'block';
@@ -1144,7 +1145,7 @@ var BoxShadow = (function BoxShadow() {
 			var shadowID =  node.getAttribute('data-shid') | 0;
 			this.layerID = this.order.indexOf(shadowID);
 			Tool.setActiveShadow(this.layerID, true);
-		}
+		};
 
 		Stack.prototype.unsetActiveLayer = function unsetActiveLayer() {
 			if (this.layer)
@@ -1152,7 +1153,7 @@ var BoxShadow = (function BoxShadow() {
 
 			this.layer = null;
 			this.layerID = 0;
-		}
+		};
 
 		Stack.prototype.hide = function hide() {
 			this.unsetActiveLayer();
@@ -1160,7 +1161,7 @@ var BoxShadow = (function BoxShadow() {
 			var style = this.container.style;
 			style.left = '100%';
 			style.zIndex = '0';
-		}
+		};
 
 		Stack.prototype.show = function show() {
 			elements.shadow_properties.style.display = 'none';
@@ -1180,7 +1181,7 @@ var BoxShadow = (function BoxShadow() {
 			style.left = '0';
 			style.zIndex = '10';
 			Tool.setActiveClass(this.id);
-		}
+		};
 
 		function init() {
 
@@ -1212,22 +1213,22 @@ var BoxShadow = (function BoxShadow() {
 
 			ButtonManager.subscribe("before", function(value) {
 				if (value === false && active.stack === stacks['before'])
-					setActiveStack(stacks['element'])
+					setActiveStack(stacks['element']);
 				if (value === true && active.stack !== stacks['before'])
-					setActiveStack(stacks['before'])
+					setActiveStack(stacks['before']);
 			});
 
 			ButtonManager.subscribe("after", function(value) {
 				if (value === false && active.stack === stacks['after'])
-					setActiveStack(stacks['element'])
+					setActiveStack(stacks['element']);
 				if (value === true && active.stack !== stacks['after'])
-					setActiveStack(stacks['after'])
+					setActiveStack(stacks['after']);
 			});
 		}
 
 		return {
 			init : init
-		}
+		};
 	})();
 
 	/*
@@ -1265,7 +1266,7 @@ var BoxShadow = (function BoxShadow() {
 			classes[topic].node.appendChild(prop);
 			classes[topic].line[property] = prop;
 			classes[topic].prop[property] = value;
-		}
+		};
 
 		var OutputClass = function OutputClass(node) {
 			var topic = node.getAttribute('data-topic');
@@ -1290,7 +1291,7 @@ var BoxShadow = (function BoxShadow() {
 				crateOutputNode(topic, properties[i]);
 
 			node.appendChild(end_decl);
-		}
+		};
 
 		var Button = function Button(topic) {
 			var button = document.createElement('div');
@@ -1302,11 +1303,11 @@ var BoxShadow = (function BoxShadow() {
 
 			button.addEventListener("click", function() {
 				toggleDisplay(topic);
-			})
+			});
 
 			menu.appendChild(button);
 			return button;
-		}
+		};
 
 		var toggleDisplay = function toggleDisplay(topic) {
 			active.button.removeAttribute('data-active');
@@ -1314,7 +1315,7 @@ var BoxShadow = (function BoxShadow() {
 			active = classes[topic];
 			active.node.style.display = 'block';
 			active.button.setAttribute('data-active', 'true');
-		}
+		};
 
 		var toggleButton = function toggleButton(topic, value) {
 			var display = (value === true) ? 'block' : 'none';
@@ -1324,7 +1325,7 @@ var BoxShadow = (function BoxShadow() {
 				toggleDisplay(topic);
 			else
 				toggleDisplay('element');
-		}
+		};
 
 		var updateProperty = function updateProperty(topic, property, data) {
 			try {
@@ -1333,7 +1334,7 @@ var BoxShadow = (function BoxShadow() {
 			catch(error) {
 				// console.log("ERROR undefined : ", topic, property, data);
 			}
-		}
+		};
 
 		var toggleProperty = function toggleProperty(topic, property, value) {
 			var display = (value === true) ? 'block' : 'none';
@@ -1343,7 +1344,7 @@ var BoxShadow = (function BoxShadow() {
 			catch(error) {
 				// console.log("ERROR undefined : ",classes, topic, property, value);
 			}
-		}
+		};
 
 		var init = function init() {
 
@@ -1364,13 +1365,13 @@ var BoxShadow = (function BoxShadow() {
 			ButtonManager.subscribe("after", function(value) {
 				toggleButton('after', value);
 			});
-		}
+		};
 
 		return {
 			init : init,
 			updateProperty : updateProperty,
 			toggleProperty : toggleProperty
-		}
+		};
 
 	})();
 
@@ -1386,11 +1387,11 @@ var BoxShadow = (function BoxShadow() {
 		LayerManager.init();
 		PreviewMouseTracking.init("preview");
 		Tool.init();
-	}
+	};
 
 	return {
 		init : init
-	}
+	};
 
 })();
 
