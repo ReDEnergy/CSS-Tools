@@ -12,13 +12,14 @@ var InputSliderManager = (function InputSliderManager() {
 	var InputComponent = function InputComponent(obj) {
 		var input = document.createElement('input');
 		input.setAttribute('type', 'text');
+		input.style.width = 50 + obj.precision * 10 + 'px';
 
 		input.addEventListener('click', function(e) {
 			this.select();
 		});
 
 		input.addEventListener('change', function(e) {
-			var value = parseInt(e.target.value);
+			var value = parseFloat(e.target.value);
 
 			if (isNaN(value) === true)
 				setValue(obj.topic, obj.value);
@@ -26,12 +27,8 @@ var InputSliderManager = (function InputSliderManager() {
 				setValue(obj.topic, value);
 		});
 
-		subscribe(obj.topic, function(value) {
-			input.value = value + obj.unit;
-		});
-
 		return input;
-	}
+	};
 
 	var SliderComponent = function SliderComponent(obj, sign) {
 		var slider = document.createElement('div');
@@ -39,6 +36,7 @@ var InputSliderManager = (function InputSliderManager() {
 		var start_value = 0;
 
 		slider.addEventListener("click", function(e) {
+			document.removeEventListener("mousemove", sliderMotion);
 			setValue(obj.topic, obj.value + obj.step * sign);
 		});
 
@@ -46,42 +44,47 @@ var InputSliderManager = (function InputSliderManager() {
 			startX = e.clientX;
 			start_value = obj.value;
 			document.body.style.cursor = "e-resize";
+
+			document.addEventListener("mouseup", slideEnd);
 			document.addEventListener("mousemove", sliderMotion);
 		});
 
-		document.addEventListener("mouseup", function(e) {
+		var slideEnd = function slideEnd(e) {
 			document.removeEventListener("mousemove", sliderMotion);
 			document.body.style.cursor = "auto";
 			slider.style.cursor = "pointer";
-		});
+		};
 
 		var sliderMotion = function sliderMotion(e) {
 			slider.style.cursor = "e-resize";
 			var delta = (e.clientX - startX) / obj.sensivity | 0;
 			var value = delta * obj.step + start_value;
 			setValue(obj.topic, value);
-		}
+		};
 
 		return slider;
-	}
+	};
 
 	var InputSlider = function(node) {
-		var min		= node.getAttribute('data-min') | 0;
-		var max		= node.getAttribute('data-max') | 0;
-		var step	= node.getAttribute('data-step') | 0;
-		var value	= node.getAttribute('data-value') | 0;
+		var min		= parseFloat(node.getAttribute('data-min'));
+		var max		= parseFloat(node.getAttribute('data-max'));
+		var step	= parseFloat(node.getAttribute('data-step'));
+		var value	= parseFloat(node.getAttribute('data-value'));
 		var topic	= node.getAttribute('data-topic');
 		var unit	= node.getAttribute('data-unit');
 		var name 	= node.getAttribute('data-info');
 		var sensivity = node.getAttribute('data-sensivity') | 0;
+		var precision = node.getAttribute('data-precision') | 0;
 
-		this.min = min;
-		this.max = max > 0 ? max : 100;
-		this.step = step === 0 ? 1 : step;
+		this.min = isNaN(min) ? 0 : min;
+		this.max = isNaN(max) ? 100 : max;
+		this.precision = precision >= 0 ? precision : 0;
+		this.step = step < 0 || isNaN(step) ? 1 : step.toFixed(precision);
 		this.topic = topic;
 		this.node = node;
-		this.unit = unit;
+		this.unit = unit === null ? '' : unit;
 		this.sensivity = sensivity > 0 ? sensivity : 5;
+		value = isNaN(value) ? this.min : value;
 
 		var input = new InputComponent(this);
 		var slider_left  = new SliderComponent(this, -1);
@@ -100,17 +103,22 @@ var InputSliderManager = (function InputSliderManager() {
 		node.appendChild(slider_left);
 		node.appendChild(input);
 		node.appendChild(slider_right);
-		node.className = 'ui-input-slider ui-input-slider-container';
 
 		this.input = input;
 		sliders[topic] = this;
 		setValue(topic, value);
-	}
+	};
+
+	InputSlider.prototype.setInputValue = function setInputValue() {
+		this.input.value = this.value.toFixed(this.precision) + this.unit;
+	};
 
 	var setValue = function setValue(topic, value, send_notify) {
 		var slider = sliders[topic];
 		if (slider === undefined)
 			return;
+
+		value = parseFloat(value.toFixed(slider.precision));
 
 		if (value > slider.max) value = slider.max;
 		if (value < slider.min)	value = slider.min;
@@ -118,13 +126,13 @@ var InputSliderManager = (function InputSliderManager() {
 		slider.value = value;
 		slider.node.setAttribute('data-value', value);
 
-		if (send_notify !== undefined && send_notify === false) {
-			slider.input.value = value + slider.unit;
+		slider.setInputValue();
+
+		if (send_notify === false)
 			return;
-		}
 
 		notify.call(slider);
-	}
+	};
 
 	var setMax = function setMax(topic, value) {
 		var slider = sliders[topic];
@@ -133,7 +141,7 @@ var InputSliderManager = (function InputSliderManager() {
 
 		slider.max = value;
 		setValue(topic, slider.value);
-	}
+	};
 
 	var setMin = function setMin(topic, value) {
 		var slider = sliders[topic];
@@ -142,7 +150,7 @@ var InputSliderManager = (function InputSliderManager() {
 
 		slider.min = value;
 		setValue(topic, slider.value);
-	}
+	};
 
 	var setUnit = function setUnit(topic, unit) {
 		var slider = sliders[topic];
@@ -151,45 +159,106 @@ var InputSliderManager = (function InputSliderManager() {
 
 		slider.unit = unit;
 		setValue(topic, slider.value);
-	}
+	};
+
+	var setStep = function setStep(topic, value) {
+		var slider = sliders[topic];
+		if (slider === undefined)
+			return;
+
+		slider.step = parseFloat(value);
+		setValue(topic, slider.value);
+	};
+
+	var setPrecision = function setPrecision(topic, value) {
+		var slider = sliders[topic];
+		if (slider === undefined)
+			return;
+
+		value = value | 0;
+		slider.precision = value;
+
+		var step = parseFloat(slider.step.toFixed(value));
+		if (step === 0)
+			slider.step = 1 / Math.pow(10, value);
+
+		setValue(topic, slider.value);
+	};
+
+	var setSensivity = function setSensivity(topic, value) {
+		var slider = sliders[topic];
+		if (slider === undefined)
+			return;
+
+		value = value | 0;
+
+		slider.sensivity = value > 0 ? value : 5;
+	};
 
 	var getNode =  function getNode(topic) {
 		return sliders[topic].node;
-	}
+	};
+
+	var getPrecision =  function getPrecision(topic) {
+		return sliders[topic].precision;
+	};
+
+	var getStep =  function getStep(topic) {
+		return sliders[topic].step;
+	};
 
 	var subscribe = function subscribe(topic, callback) {
 		if (subscribers[topic] === undefined)
 			subscribers[topic] = [];
 		subscribers[topic].push(callback);
-	}
+	};
 
 	var unsubscribe = function unsubscribe(topic, callback) {
 		subscribers[topic].indexOf(callback);
 		subscribers[topic].splice(index, 1);
-	}
+	};
 
 	var notify = function notify() {
-		for (var i in subscribers[this.topic]) {
+		if (subscribers[this.topic] === undefined)
+			return;
+		for (var i = 0; i < subscribers[this.topic].length; i++)
 			subscribers[this.topic][i](this.value);
-		}
-	}
+	};
+
+	var createSlider = function createSlider(topic, label) {
+		var slider = document.createElement('div');
+		slider.className = 'ui-input-slider';
+		slider.setAttribute('data-topic', topic);
+
+		if (label !== undefined)
+			slider.setAttribute('data-info', label);
+
+		new InputSlider(slider);
+		return slider;
+	};
 
 	var init = function init() {
 		var elem = document.querySelectorAll('.ui-input-slider');
 		var size = elem.length;
 		for (var i = 0; i < size; i++)
 			new InputSlider(elem[i]);
-	}
+	};
 
 	return {
 		init : init,
 		setMax : setMax,
 		setMin : setMin,
 		setUnit : setUnit,
+		setStep : setStep,
 		getNode : getNode,
+		getStep : getStep,
 		setValue : setValue,
 		subscribe : subscribe,
-		unsubscribe : unsubscribe
-	}
+		unsubscribe : unsubscribe,
+		setPrecision : setPrecision,
+		setSensivity : setSensivity,
+		getPrecision : getPrecision,
+		createSlider : createSlider,
+	};
 
 })();
