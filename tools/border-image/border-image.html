@@ -4,41 +4,159 @@
 
 	<meta charset="utf-8">
 	<title> Border Image Tool </title>
+	<link href="../../modules/grid12.css" rel="stylesheet"/>
+
+	<link href="../../modules/ui-input-slider/ui-input-slider.css" rel="stylesheet"/>
+	<script src="../../modules/ui-input-slider/ui-input-slider.js"></script>
+
+	<link href="../../modules/ui-dropdown/ui-dropdown.css" rel="stylesheet"/>
+	<script src="../../modules/ui-dropdown/ui-dropdown.js"></script>
+
+	<link href="../../modules/ui-button/ui-button.css" rel="stylesheet"/>
+	<script src="../../modules/ui-button/ui-button.js"></script>
+
 	<link href="border-image.css" rel="stylesheet"/>
 	<script src="border-image.js"></script>
 
 </head>
 
 <body>
+	<div id="container">
 
-	<div id="tool">
-		<div class="description">
-			<p class="title"> CSS border-image-slice TOOL</p>
-			Drag the handlers to modify border-image-slice property
-		</div>
-
-		<div class="line">
-			<canvas id="border_tool_canvas" width="360" height="210">
-			</canvas>
-			<div>
-				Mouse tracking position
-				<div id="info"> </div>
+		<div id="gallery">
+			<div id="image-gallery">
+				<img class="image" src="images/border-image-1.png" data-stateID="border"/>
+				<img class="image" src="images/border-image-2.png" data-stateID="border2"/>
+				<img class="image" src="images/border-image-3.png" data-stateID="border3"/>
+				<img class="image" src="images/border-image-4.png" data-stateID="border4"/>
+				<img class="image" src="images/border-image-5.png" data-stateID="border5"/>
+				<img class="image" src="images/border-image-6.svg" data-stateID="border6"/>
 			</div>
 		</div>
 
-		<div class="line">
-			<div class="description">
-				Result preview
+		<div id="load-actions" class="group section">
+			<div id="toggle-gallery" data-action="hide"> </div>
+			<div id="load-image" class="button"> Upload image </div>
+			<input id="remote-url" type="text" placeholder="Load an image from URL"/>
+			<div id="load-remote" class="button"> </div>
+		</div>
+
+		<div id="general-controls" class="group section">
+			<div class="name"> Control Box </div>
+			<div class="separator"></div>
+			<div class="property">
+				<div class="name">scale</div>
+				<div class="ui-input-slider" data-topic="scale"
+					data-unit="%" data-max="300" data-sensivity="10">
+				</div>
 			</div>
-			<div id="preview">
-				Drag the bottom right corner to resize the element
+			<div class="separator"></div>
+			<div class="property">
+				<div class="name">draggable</div>
+				<div class="ui-checkbox" data-topic='drag-subject'></div>
+			</div>
+			<div class="property right">
+				<div class="name">section height</div>
+				<div class="ui-input-slider" data-topic="preview-area-height"
+					data-min="400" data-max="1000">
+				</div>
 			</div>
 		</div>
 
+		<div id="preview_section" class="group section">
+			<div id="subject">
+				<div class="guideline" data-axis="Y" data-topic="slice-top"></div>
+				<div class="guideline" data-axis="X" data-topic="slice-right"></div>
+				<div class="guideline" data-axis="Y" data-topic="slice-bottom"></div>
+				<div class="guideline" data-axis="X" data-topic="slice-left"></div>
+			</div>
+			<div id="preview"> </div>
+		</div>
+
+		<!-- controls -->
+		<div id="controls" class="group section">
+
+			<!-- border-image-slice -->
+			<div id="border-slice-control" class="category">
+				<div class="title"> border-image-slice </div>
+				<div class="property">
+					<div class="name">fill</div>
+					<div class="ui-checkbox" data-topic='slice-fill'></div>
+				</div>
+			</div>
+
+			<!-- border-image-width -->
+			<div id="border-width-control" class="category">
+				<div class="title"> border-image-width </div>
+			</div>
+
+			<!-- border-image-outset -->
+			<div id="border-outset-control" class="category">
+				<div class="title"> border-image-outset </div>
+			</div>
+
+			<!-- other-settings -->
+			<div id="aditional-properties" class="category">
+				<div class="title"> aditional-properties </div>
+				<div class="property">
+					<div class="name"> repeat-x </div>
+					<div class="ui-dropdown border-repeat" data-topic="image-repeat-X" data-selected="2">
+						<div data-value="0">repeat</div>
+						<div data-value="0">stretch</div>
+						<div data-value="0">round</div>
+					</div>
+				</div>
+				<div class="property">
+					<div class="name"> repeat-y </div>
+					<div class="ui-dropdown border-repeat" data-topic="image-repeat-Y" data-selected="2">
+						<div data-value="1">repeat</div>
+						<div data-value="1">stretch</div>
+						<div data-value="1">round</div>
+					</div>
+				</div>
+				<div class="property">
+					<div class="ui-input-slider" data-topic="font-size" data-info="em size"
+						data-unit="px" data-value="12" data-sensivity="3">
+					</div>
+				</div>
+
+				<div class="property">
+					<div class="ui-input-slider" data-topic="preview-width" data-info="width"
+						 data-unit=" px" data-min="10" data-max="10000" data-sensivity="3"></div>
+				</div>
+				<div class="property">
+					<div class="ui-input-slider" data-topic="preview-height" data-info="height"
+						data-unit=" px" data-min="10" data-max="10000" data-sensivity="3">
+					</div>
+				</div>
+			</div>
+
+
+			<div id="output" class="category">
+				<div class="title"> CSS Code </div>
+				<div class="css-property">
+					<span class="name"> border-image-slice: </span>
+					<span id="out-border-slice" class="value"> </span>
+				</div>
+				<div class="css-property">
+					<span class="name"> border-image-width: </span>
+					<span id="out-border-width" class="value"> </span>
+				</div>
+				<div class="css-property">
+					<span class="name"> border-image-outset: </span>
+					<span id="out-border-outset" class="value"> </span>
+				</div>
+				<div class="css-property">
+					<span class="name"> border-image-repeat: </span>
+					<span id="out-border-repeat" class="value"> </span>
+				</div>
+				<div class="css-property">
+					<span class="name"> border-image-source: </span>
+					<span id="out-border-source" class="value">  </span>
+				</div>
+			</div>
+
+		</div>
 	</div>
-
 </body>
 </html>
-
-
-
