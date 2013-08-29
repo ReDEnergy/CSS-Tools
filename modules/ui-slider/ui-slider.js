@@ -169,10 +169,8 @@ var SliderManager = (function SliderManager() {
 	var notify = function notify() {
 		if (subscribers[this.topic] === undefined)
 			return;
-
-		for (var i in subscribers[this.topic]) {
+		for (var i = 0; i < subscribers[this.topic].length; i++)
 			subscribers[this.topic][i](this.value);
-		}
 	}
 
 	var init = function init() {
