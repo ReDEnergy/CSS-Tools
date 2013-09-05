@@ -1,0 +1,302 @@
+/*
+ * COLOR PICKER TOOL
+ */
+
+body {
+	max-width: 1000px;
+	margin: 30px auto;
+
+	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+/**
+ * Resize Handle
+ */
+.resize-handle {
+	width: 10px;
+	height: 10px;
+	background: url("images/resize.png") center center no-repeat;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+[data-resize='both']:hover {
+	cursor: nw-resize;
+}
+
+[data-resize='width']:hover {
+	cursor: w-resize;
+}
+
+[data-resize='height']:hover {
+	cursor: n-resize;
+}
+
+/**
+ * 	Container
+ */
+#container {
+	width: 100%;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+
+	display: table;
+}
+
+/**
+ * Color Picker
+ */
+
+.ui-color-picker {
+	float: left;
+}
+
+/**
+ * Color info box
+ */
+#color-info {
+	width: 300px;
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid #DDD;
+	float: right;
+}
+
+#color-info .property {
+	width: 100%;
+	height: 30px;
+	margin: 5px 0;
+}
+
+#color-info .property > * {
+	float: left;
+	height: 100%;
+	line-height: 170%;
+}
+
+#color-info .property .title {
+	width: 20%;
+	padding-left: 10%;
+	color: #999;
+}
+
+#color-info .property .value {
+	width: 60%;
+	padding-left: 10%;
+	color: #555;
+}
+
+
+/**
+ * 	Color Samples
+ */
+#color-samples {
+	width: 100%;
+	height: 55px;
+	margin: 10px 0 0 0;
+	min-height: 55px;
+	border: 1px solid #DDD;
+	overflow: auto;
+	position: relative;
+	float: right;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#color-samples .sample,
+#color-samples #add-sample {
+	width: 40px;
+	height: 40px;
+	margin: 5px;
+	position: relative;
+	border: 1px solid #DDD;
+	float: left;
+}
+
+#color-samples .sample:hover {
+	cursor: pointer;
+	border-color: #BBB;
+}
+
+#color-samples .sample[data-active='active'] {
+	border-color: #999;
+}
+
+#color-samples #add-sample {
+	box-shadow: inset 0px 0px 2px 0px #DDD;
+}
+
+#color-samples #add-sample:hover {
+	cursor: pointer;
+	border-color: #DDD;
+	box-shadow: inset 0px 0px 5px 0px #CCC;
+}
+
+#color-samples #add-sample:before,
+#color-samples #add-sample:after {
+	content: "";
+	position: absolute;
+	background-color: #EEE;
+	box-shadow: 0 0 1px 0 #EEE;
+}
+
+#color-samples #add-sample:before {
+	width: 70%;
+	height: 16%;
+	top: 42%;
+	left: 15%;
+}
+
+#color-samples #add-sample:after {
+	width: 16%;
+	height: 70%;
+	top: 15%;
+	left: 42%;
+}
+
+#color-samples #add-sample:hover:before,
+#color-samples #add-sample:hover:after {
+	background-color: #DDD;
+	box-shadow: 0 0 1px 0 #DDD;
+}
+
+
+/**
+ * 	Color palette
+ */
+
+#color-palette {
+	width: 65%;
+	display: table;
+	margin: 10px 0;
+	float: left;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#color-palette .palette {
+	width: 100%;
+	float: left;
+}
+
+#color-palette .palette .sample {
+	width: 40px;
+	height: 40px;
+	margin: 5px;
+	position: relative;
+	border: 1px solid #DDD;
+	float: left;
+}
+
+#color-palette .palette .sample:hover {
+	cursor: pointer;
+	border-color: #BBB;
+}
+
+#color-palette .palette .sample[data-disabled='true'] {
+	display: none;
+}
+
+/**
+ * Canvas
+ */
+
+#canvas-content {
+	width: 100%;
+	height: 300px;
+	min-height: 150px;
+	border: 1px solid #DDD;
+	position: relative;
+	float: left;
+}
+
+#canvas {
+	width: 85%;
+	height: 100%;
+	position: relative;
+	float: left;
+}
+
+#canvas .sample {
+	width: 100px;
+	height: 100px;
+	min-width: 20px;
+	min-height: 20px;
+	position: absolute;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#canvas .sample:hover {
+	cursor: move;
+}
+
+#canvas .sample .resize-handle {
+	display: none;
+}
+
+#canvas .sample:hover .resize-handle {
+	display: block;
+}
+
+#canvas .sample .delete {
+	width: 10px;
+	height: 10px;
+	margin: 5px;
+	background:  url("images/delete-white.png") center center no-repeat;
+	background-size: 100% 100%;
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: none;
+}
+
+#canvas .sample .delete:hover {
+	cursor: pointer;
+}
+
+#canvas .sample:hover .delete {
+	display: block;
+}
+
+#canvas-actions {
+	width: 15%;
+	height: 100%;
+	float: left;
+	background: #EEE;
+}
+
+#delete-area {
+	margin: 10px;
+	padding: 30px 0;
+	border: 2px dashed #CCC;
+	border-radius: 5px;
+	text-align: center;
+	line-height: 100%;
+	color: #777;
+}
+
+#delete-area[data-state="dragover"] {
+	border: 2px dashed #259AD1;
+}
+
+
+
+
+
+
+
+
+
+
+
