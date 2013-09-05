@@ -358,10 +358,6 @@ body {
 	display : block;
 	position: absolute;
 	z-index: -1;
-
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
 }
 
 
@@ -582,11 +578,6 @@ body {
 	background: #FFF;
 	position: absolute;
 	z-index: 1;
-}
-
-#colorpicker .preview > * {
-	width: 50%;
-	height: 100%;
 }
 
 #colorpicker #output_color {

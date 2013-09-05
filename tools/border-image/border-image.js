@@ -55,7 +55,7 @@ var BorderImage = (function BorderImage() {
 		var valueX = null;
 		var valueY = null;
 
-		var dragStart = function dragStart(e) {
+		var resizeStart = function resizeStart(e) {
 			if (e.button !== 0)
 				return;
 
@@ -63,18 +63,19 @@ var BorderImage = (function BorderImage() {
 			valueY = e.clientY - preview.clientHeight;
 			dragging = true;
 
-			document.addEventListener('mousemove', mouseDrag);
+			document.addEventListener('mousemove', mouseMove);
+			document.addEventListener('mouseup', resizeEnd);
 		};
 
-		var dragEnd = function dragEnd(e) {
+		var resizeEnd = function resizeEnd(e) {
 			if (e.button !== 0 || dragging === false)
 				return;
 
-			document.removeEventListener('mousemove', mouseDrag);
+			document.removeEventListener('mousemove', mouseMove);
 			dragging = false;
 		};
 
-		var mouseDrag = function mouseDrag(e) {
+		var mouseMove = function mouseMove(e) {
 			InputSliderManager.setValue('preview-width', e.clientX - valueX);
 			InputSliderManager.setValue('preview-height', e.clientY - valueY);
 		};
@@ -87,8 +88,7 @@ var BorderImage = (function BorderImage() {
 			var handle = document.createElement('div');
 			handle.className = 'resize-handle';
 
-			handle.addEventListener('mousedown', dragStart);
-			document.addEventListener('mouseup', dragEnd);
+			handle.addEventListener('mousedown', resizeStart);
 
 			preview.appendChild(handle);
 
