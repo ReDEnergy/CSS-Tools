@@ -37,9 +37,47 @@ var UIColorPicker = (function UIColorPicker() {
 		this.format = 'HSV';
 	}
 
+	function RGBColor(r, g, b) {
+		var color = new Color();
+		color.setRGBA(r, g, b, 1);
+		return color;
+	}
+
+	function RGBAColor(r, g, b, a) {
+		var color = new Color();
+		color.setRGBA(r, g, b, a);
+		return color;
+	}
+
+	function HSVColor(h, s, v) {
+		var color = new Color();
+		color.setHSV(h, s, v);
+		return color;
+	}
+
+	function HSVAColor(h, s, v, a) {
+		var color = new Color();
+		color.setHSV(h, s, v);
+		color.a = a;
+		return color;
+	}
+
+	function HSLColor(h, s, l) {
+		var color = new Color();
+		color.setHSL(h, s, l);
+		return color;
+	}
+
+	function HSLAColor(h, s, l, a) {
+		var color = new Color();
+		color.setHSL(h, s, l);
+		color.a = a;
+		return color;
+	}
+
 	Color.prototype.copy = function copy(obj) {
 		if(obj instanceof Color !== true) {
-			console.log('Typeof instance not Color');
+			console.log('Typeof parameter not Color');
 			return;
 		}
 
@@ -312,9 +350,10 @@ var UIColorPicker = (function UIColorPicker() {
 		var rgb = '(' + this.r + ', ' + this.g + ', ' + this.b;
 		var a = '';
 		var v = '';
-		if (this.a !== 1) {
+		var x = parseFloat(this.a);
+		if (x !== 1) {
 			a = 'a';
-			v = ', ' + this.a;
+			v = ', ' + x;
 		}
 
 		var value = 'rgb' + a + rgb + v + ')';
@@ -331,11 +370,11 @@ var UIColorPicker = (function UIColorPicker() {
 
 		var a = '';
 		var v = '';
-
-		var hsl = '(' + this.hue + ', ' + this.saturation + ', ' + this.lightness;
-		if (this.a !== 1) {
+		var hsl = '(' + this.hue + ', ' + this.saturation + '%, ' + this.lightness +'%';
+		var x = parseFloat(this.a);
+		if (x !== 1) {
 			a = 'a';
-			v = ', ' + this.a;
+			v = ', ' + x;
 		}
 
 		var value = 'hsl' + a + hsl + v + ')';
@@ -439,22 +478,18 @@ var UIColorPicker = (function UIColorPicker() {
 	};
 
 	ColorPicker.prototype.createAlphaArea = function createAlphaArea() {
-		var area = document.createElement('div');
 		var mask = document.createElement('div');
 		var picker = document.createElement('div');
 
-		area.className = 'alpha';
-		mask.className = 'alpha-mask';
+		mask.className = 'alpha';
 		picker.className = 'slider-picker';
 
-		this.alpha_area = area;
 		this.alpha_mask = mask;
 		this.alpha_picker = picker;
-		setMouseTracking(area, this.updateAlphaSlider.bind(this));
+		setMouseTracking(mask, this.updateAlphaSlider.bind(this));
 
-		area.appendChild(mask);
 		mask.appendChild(picker);
-		this.node.appendChild(area);
+		this.node.appendChild(mask);
 	};
 
 	ColorPicker.prototype.createPreviewBox = function createPreviewBox(e) {
@@ -501,9 +536,10 @@ var UIColorPicker = (function UIColorPicker() {
 		button.className = 'switch_mode';
 		button.addEventListener('click', function() {
 			if (this.picker_mode === 'HSV')
-				this.setPickerModeToHSL();
+				this.setPickerMode('HSL');
 			else
-				this.setPickerModeToHSV();
+				this.setPickerMode('HSV');
+
 		}.bind(this));
 
 		this.node.appendChild(button);
@@ -568,8 +604,8 @@ var UIColorPicker = (function UIColorPicker() {
 	};
 
 	ColorPicker.prototype.updateAlphaSlider = function updateAlphaSlider(e) {
-		var x = e.pageX - this.alpha_area.offsetLeft;
-		var width = this.alpha_area.clientWidth;
+		var x = e.pageX - this.alpha_mask.offsetLeft;
+		var width = this.alpha_mask.clientWidth;
 
 		if (x < 0) x = 0;
 		if (x > width) x = width;
@@ -646,7 +682,7 @@ var UIColorPicker = (function UIColorPicker() {
 	};
 
 	ColorPicker.prototype.updateAlphaPicker = function updateAlphaPicker() {
-		var size = this.alpha_area.clientWidth;
+		var size = this.alpha_mask.clientWidth;
 		var offset = 1;
 		var pos = (this.color.a * size) | 0;
 		this.alpha_picker.style.left = pos - offset + 'px';
@@ -663,13 +699,7 @@ var UIColorPicker = (function UIColorPicker() {
 	};
 
 	ColorPicker.prototype.updateAlphaGradient = function updateAlphaGradient() {
-		var nc = new Color(this.color);
-		nc.a = 0;
-		var start = nc.getRGBA();
-		nc.a = 1;
-		var end = nc.getRGBA();
-		var gradient = '-moz-linear-gradient(left, ' +	start + '0%, ' + end + ' 100%)';
-		this.alpha_mask.style.background = gradient;
+		this.alpha_mask.style.backgroundColor = this.color.getHexa();
 	};
 
 	ColorPicker.prototype.updatePreviewColor = function updatePreviewColor() {
@@ -764,7 +794,7 @@ var UIColorPicker = (function UIColorPicker() {
 
 	ColorPicker.prototype.setColor = function setColor(color) {
 		if(color instanceof Color !== true) {
-			console.log('Typeof instance not Color');
+			console.log('Typeof parameter not Color');
 			return;
 		}
 
@@ -795,20 +825,11 @@ var UIColorPicker = (function UIColorPicker() {
 		notify(this.topic, this.color);
 	};
 
-	ColorPicker.prototype.setPickerModeToHSV = function setPickerModeToHSV(mode) {
-		if (this.picker_mode === 'HSV')
+	ColorPicker.prototype.setPickerMode = function setPickerMode(mode) {
+		if (mode !== 'HSV' && mode !== 'HSL')
 			return;
 
-		this.picker_mode = 'HSV';
-		this.node.setAttribute('data-mode', this.picker_mode);
-		this.setColor(this.color);
-	};
-
-	ColorPicker.prototype.setPickerModeToHSL = function setPickerModeToHSL(mode) {
-		if (this.picker_mode === 'HSL')
-			return;
-
-		this.picker_mode = 'HSL';
+		this.picker_mode = mode;
 		this.node.setAttribute('data-mode', this.picker_mode);
 		this.setColor(this.color);
 	};
@@ -817,9 +838,19 @@ var UIColorPicker = (function UIColorPicker() {
 	//								UNUSED
 	/*************************************************************************/
 
+	var setPickerMode = function setPickerMode(topic, mode) {
+		if (pickers[topic])
+			pickers[topic].setPickerMode(mode);
+	};
+
 	var setColor = function setColor(topic, color) {
 		if (pickers[topic])
 			pickers[topic].setColor(color);
+	};
+
+	var getColor = function getColor(topic) {
+		if (pickers[topic])
+			return new Color(pickers[topic].color);
 	};
 
 	var subscribe = function subscribe(topic, callback) {
@@ -853,9 +884,17 @@ var UIColorPicker = (function UIColorPicker() {
 	return {
 		init : init,
 		Color : Color,
+		RGBColor : RGBColor,
+		RGBAColor : RGBAColor,
+		HSVColor : HSVColor,
+		HSVAColor : HSVAColor,
+		HSLColor : HSLColor,
+		HSLAColor : HSLAColor,
 		setColor : setColor,
+		getColor : getColor,
 		subscribe : subscribe,
 		unsubscribe : unsubscribe,
+		setPickerMode : setPickerMode
 	};
 
 })();
