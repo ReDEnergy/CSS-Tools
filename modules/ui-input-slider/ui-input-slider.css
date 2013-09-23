@@ -12,7 +12,6 @@
 .ui-input-slider * {
 	float: left;
 	height: 100%;
-	line-height: 100%;
 }
 
 /* Input Slider */
@@ -33,6 +32,7 @@
 	padding: 0px 10px 0px 0px;
 	text-align: right;
 	text-transform: lowercase;
+	line-height: inherit;
 }
 
 .ui-input-slider-left, .ui-input-slider-right {
