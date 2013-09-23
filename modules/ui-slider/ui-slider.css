@@ -2,7 +2,7 @@
  * UI Slider
  */
 
-.slidergroup {
+.ui-slider {
 	height: 20px;
 	margin: 10px 0;
 	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
@@ -10,7 +10,7 @@
 	user-select: none;
 }
 
-.slidergroup * {
+.ui-slider > * {
 	float: left;
 	height: 100%;
 	line-height: 100%;
@@ -18,7 +18,7 @@
 
 /* Slider */
 
-.ui-slider {
+.ui-slider-slider {
 	height: 10px;
 	width: 200px;
 	margin: 4px 10px;
@@ -28,7 +28,7 @@
 	background: #EEE;
 }
 
-.ui-slider:hover {
+.ui-slider-slider:hover {
 	cursor: pointer;
 }
 
@@ -40,8 +40,9 @@
 }
 
 .ui-slider-pointer {
-	width: 13px;
+	width: 12px;
 	height: 13px;
+	margin: 0 0 0 -7px;
 	background-color: #EEE;
 	border: 1px solid #2C9FC9;
 	border-radius: 3px;
@@ -50,7 +51,7 @@
 	left: 0%;
 }
 
-.ui-slider-btn-set {
+.ui-slider-button {
 	width: 25px;
 	background-color: #2C9FC9;
 	border-radius: 3px;
@@ -60,18 +61,14 @@
 	text-align: center;
 }
 
-.ui-slider-btn-set:hover {
+.ui-slider-button:hover {
 	background-color: #379B4A;
 	cursor: pointer;
 }
 
-.ui-slider-input > input {
+.ui-slider > input {
+	width: 50px;
 	margin: 0 10px;
 	padding: 0;
-	width: 50px;
 	text-align: center;
-
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
 }
