@@ -1,10 +1,9 @@
-'use strict';
-
 window.addEventListener("load", function() {
 	ColorPickerTool.init();
 });
 
 var ColorPickerTool = (function ColorPickerTool() {
+	'use strict';
 
 	/*========== Get DOM Element By ID ==========*/
 
@@ -787,7 +786,6 @@ var ColorPickerTool = (function ColorPickerTool() {
 			canvas.appendChild(button);
 
 			button.addEventListener('click', function() {
-				console.log(state);
 				state = !state;
 				canvas.setAttribute('data-bg', state);
 			});
