@@ -1,10 +1,9 @@
-'use strict';
-
 /**
  * UI-ButtonManager
  */
 
-var ButtonManager = (function CheckBoxManager() {
+var CheckBoxManager = (function CheckBoxManager() {
+	'use strict';
 
 	var subscribers = [];
 	var buttons = [];
