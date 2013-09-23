@@ -1,10 +1,9 @@
-'use strict';
-
 window.addEventListener("load", function(){
 	BoxShadow.init();
 });
 
 var BoxShadow = (function BoxShadow() {
+	'use strict';
 
 	function getElemById(id) {
 		return document.getElementById(id);
@@ -743,13 +742,13 @@ var BoxShadow = (function BoxShadow() {
 			SliderManager.setValue("z-index", active.zIndex);
 			SliderManager.setValue("width", active.width);
 			SliderManager.setValue("height", active.height);
-			ButtonManager.setValue("border-state", active.border);
+			CheckBoxManager.setValue("border-state", active.border);
 			active.updateShadows();
 		};
 
 		var disableClass = function disableClass(topic) {
 			classes[topic].toggleDisplay(false);
-			ButtonManager.setValue(topic, false);
+			CheckBoxManager.setValue(topic, false);
 		};
 
 		var addShadow = function addShadow(position) {
@@ -777,7 +776,7 @@ var BoxShadow = (function BoxShadow() {
 		var setActiveShadow = function setActiveShadow(id, glow) {
 			active.shadowID = id;
 			ColoPicker.setColor(active.shadows[id].color);
-			ButtonManager.setValue("inset", active.shadows[id].inset);
+			CheckBoxManager.setValue("inset", active.shadows[id].inset);
 			SliderManager.setValue("blur", active.shadows[id].blur);
 			SliderManager.setValue("spread", active.shadows[id].spread);
 			SliderManager.setValue("posX", active.shadows[id].posX);
@@ -893,7 +892,7 @@ var BoxShadow = (function BoxShadow() {
 			PreviewMouseTracking.subscribe(updateActivePos);
 
 			// Affects shadows
-			ButtonManager.subscribe("inset", toggleShadowInset);
+			CheckBoxManager.subscribe("inset", toggleShadowInset);
 			SliderManager.subscribe("posX", setShadowPosX);
 			SliderManager.subscribe("posY", setShadowPosY);
 			SliderManager.subscribe("blur", setShadowBlur);
@@ -933,13 +932,13 @@ var BoxShadow = (function BoxShadow() {
 			classes['after'].left = 30;
 			classes['before'].toggleDisplay(false);
 			classes['after'].toggleDisplay(false);
-			ButtonManager.setValue('before', false);
-			ButtonManager.setValue('after', false);
+			CheckBoxManager.setValue('before', false);
+			CheckBoxManager.setValue('after', false);
 
-			ButtonManager.subscribe("before", classes['before'].toggleDisplay.bind(classes['before']));
-			ButtonManager.subscribe("after", classes['after'].toggleDisplay.bind(classes['after']));
+			CheckBoxManager.subscribe("before", classes['before'].toggleDisplay.bind(classes['before']));
+			CheckBoxManager.subscribe("after", classes['after'].toggleDisplay.bind(classes['after']));
 
-			ButtonManager.subscribe("border-state", function(value) {
+			CheckBoxManager.subscribe("border-state", function(value) {
 				active.toggleBorder(value);
 			});
 
@@ -1211,14 +1210,14 @@ var BoxShadow = (function BoxShadow() {
 			layerManager.addEventListener("click", mouseEvents);
 			layerMenu.addEventListener("click", mouseEvents);
 
-			ButtonManager.subscribe("before", function(value) {
+			CheckBoxManager.subscribe("before", function(value) {
 				if (value === false && active.stack === stacks['before'])
 					setActiveStack(stacks['element']);
 				if (value === true && active.stack !== stacks['before'])
 					setActiveStack(stacks['before']);
 			});
 
-			ButtonManager.subscribe("after", function(value) {
+			CheckBoxManager.subscribe("after", function(value) {
 				if (value === false && active.stack === stacks['after'])
 					setActiveStack(stacks['element']);
 				if (value === true && active.stack !== stacks['after'])
@@ -1358,11 +1357,11 @@ var BoxShadow = (function BoxShadow() {
 			active = classes['element'];
 			toggleDisplay('element');
 
-			ButtonManager.subscribe("before", function(value) {
+			CheckBoxManager.subscribe("before", function(value) {
 				toggleButton('before', value);
 			});
 
-			ButtonManager.subscribe("after", function(value) {
+			CheckBoxManager.subscribe("after", function(value) {
 				toggleButton('after', value);
 			});
 		};
@@ -1380,7 +1379,7 @@ var BoxShadow = (function BoxShadow() {
 	 * Init Tool
 	 */
 	var init = function init() {
-		ButtonManager.init();
+		CheckBoxManager.init();
 		OutputManager.init();
 		ColoPicker.init();
 		SliderManager.init();
