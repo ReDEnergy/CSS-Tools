@@ -1,10 +1,9 @@
-'use strict';
-
 window.addEventListener("load", function() {
 	BorderRadius.init();
 });
 
 var BorderRadius = (function BorderRadius() {
+	'use strict';
 
 	function getElemById(id) {
 		return document.getElementById(id);
@@ -165,7 +164,7 @@ var BorderRadius = (function BorderRadius() {
 			this.setUnitR(e.target.value | 0);
 		}.bind(this));
 
-		if (x === 'left' && y == 'top') handle.className = 'handle handle-top-left'
+		if (x === 'left' && y == 'top') handle.className = 'handle handle-top-left';
 		if (x === 'right' && y == 'top') handle.className = 'handle handle-top-right';
 		if (x === 'right' && y == 'bottom') handle.className = 'handle handle-bottom-right';
 		if (x === 'left' && y == 'bottom') 	handle.className = 'handle handle-bottom-left';

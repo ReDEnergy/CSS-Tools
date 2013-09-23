@@ -1,10 +1,9 @@
-'use strict';
-
 window.addEventListener("load", function() {
 	BorderImage.init();
 });
 
 var BorderImage = (function BorderImage() {
+	'use strict';
 
 	var getElemById = document.getElementById.bind(document);
 
