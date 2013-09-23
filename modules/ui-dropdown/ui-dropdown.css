@@ -36,7 +36,6 @@
 /* Dropdown Select Button */
 
 .ui-dropdown-select {
-	height: inherit;
 	padding: 0 0.75em;
 	color: #FFF;
 	line-height: 2em;
@@ -51,14 +50,14 @@
 	margin: 0;
 	padding: 0 0.3em;
 
-	border: 3px solid #3490D2;
+	border: 1px solid #3490D2;
 	border-color: #208B20;
 	background: #666;
 	background-color: #EEF1F5;
 	color: #000;
 
 	position: absolute;
-	top: 2em;
+	top: 100%;
 	left: 0;
 	z-index: 100;
 
@@ -91,15 +90,11 @@
 }
 
 .ui-dropdown-list > div {
-	width: 100%;
+	width: 80%;
 	height: 1.6em;
 	margin: 0.3em 0;
-	padding: 0.3em;
-	line-height: 1em;
-
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
+	padding: 0.3em 10%;
+	line-height: 1.6em;
 }
 
 .ui-dropdown-list > div:hover {
