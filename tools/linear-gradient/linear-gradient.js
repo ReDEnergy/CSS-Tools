@@ -1,13 +1,13 @@
-'use strict';
-
 window.addEventListener("load", function() {
 	LinearGradientTool.init();
 });
 
 var LinearGradientTool = (function LinearGradientTool() {
+	'use strict';
 
 	var radian = 180 / Math.PI;
 	var inv_radian = Math.PI / 180;
+	var units = {'%': 1, 'px' : 0};
 
 	/*========== DOM Methods ==========*/
 
@@ -53,11 +53,13 @@ var LinearGradientTool = (function LinearGradientTool() {
 
 	var UIComponent = (function UIComponent() {
 
-		function makeResizable(elem, axis, callback) {
+		function makeResizable(elem, axis, callback, endFunc) {
 			var valueX = 0;
 			var valueY = 0;
 			var action = 0;
 			var callback = typeof callback === "function" ? callback : null;
+
+			endFunc = endFunc || function(e) {};
 
 			var resizeStart = function resizeStart(e) {
 				e.stopPropagation();
@@ -89,6 +91,7 @@ var LinearGradientTool = (function LinearGradientTool() {
 				document.body.removeAttribute('data-resize', axis);
 				document.removeEventListener('mousemove', mouseMove);
 				document.removeEventListener('mouseup', resizeEnd);
+				endFunc();
 			};
 
 			var handle = document.createElement('div');
@@ -191,7 +194,8 @@ var LinearGradientTool = (function LinearGradientTool() {
 	};
 
 	GradientPoint.prototype.updateAbsolutePosition = function updateAbsolutePosition() {
-		this.position = parseFloat(((this.CSSposition / 100) * (2 * this.Axis.lsize)).toFixed(1));;
+		if (this.Axis.unit ='%')
+			this.position = parseFloat(((this.CSSposition / 100) * (2 * this.Axis.lsize)).toFixed(1));;
 	};
 
 	GradientPoint.prototype.setPosition = function setPosition(pos) {
@@ -214,7 +218,7 @@ var LinearGradientTool = (function LinearGradientTool() {
 		this.updateCSSvalue();
 	};
 
-	GradientPoint.prototype.updateCSSPosition = function updatePosition() {
+	GradientPoint.prototype.updateCSSPosition = function updateCSSPosition() {
 		this.CSSposition = this.position | 0;
 		if (this.Axis.unit === '%')
 			this.CSSposition = parseFloat((100 * this.position / (2 * this.Axis.lsize)).toFixed(1));
@@ -393,10 +397,7 @@ var LinearGradientTool = (function LinearGradientTool() {
 		this.axis.setAttribute('data-active', this.state);
 		InputSliderManager.setUnit('point-position', this.unit, false);
 		SliderManager.setValue('axis-rotation', this.angle | 0, false);
-
-		var dp = 0;
-		if (this.unit === '%') dp = 1;
-		DropDownManager.setValue('axis-unit', dp);
+		DropDownManager.setValue('axis-unit', units[this.unit], false);
 
 		if (this.ActivePoint)
 			this.ActivePoint.activate();
@@ -782,6 +783,12 @@ var LinearGradientTool = (function LinearGradientTool() {
 				lg_axes[i].updateOnResize();
 		};
 
+		var resizeEnd = function resizeEnd() {
+			var len = lg_axes.length;
+			for(var i = 0; i < len; i++)
+				lg_axes[i].updateAbsolutePosition();
+		};
+
 		/* General functions */
 
 		var updateCSSGradient = function () {
@@ -821,7 +828,7 @@ var LinearGradientTool = (function LinearGradientTool() {
 			DropDownManager.subscribe('axis-unit', setAxisUnit);
 			SliderManager.subscribe('axis-rotation', updateAxisRotation);
 
-			UIComponent.makeResizable(gradient_container, 'both', resizeContainer);
+			UIComponent.makeResizable(gradient_container, 'both', resizeContainer, resizeEnd);
 			window.addEventListener('resize', resizeContainer);
 		};
 
