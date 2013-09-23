@@ -1,0 +1,486 @@
+/*
+ * COLOR PICKER TOOL
+ */
+
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0 auto;
+
+	font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+body[data-dragging="true"] {
+}
+
+/**
+ * Resize Handle
+ */
+
+.resize-handle {
+	width: 10px;
+	height: 10px;
+	background: url("images/resize.png") center center no-repeat;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+[data-resize='both']:hover {
+	cursor: nw-resize !important;
+}
+
+[data-resize='width']:hover {
+	cursor: w-resize !important;
+}
+
+[data-resize='height']:hover {
+	cursor: n-resize !important;
+}
+
+/**
+ * Main Container
+ */
+
+#container {
+	width: 1000px;
+	height: 100%;
+	display: table;
+	margin: 0 auto;
+}
+
+
+#gradient-container {
+	width: 450px;
+	height: 250px;
+	min-width: 8px;
+	min-height: 8px;
+	margin: 100px auto;
+	border: 1px solid #DDD;
+	position: relative;
+}
+
+#gradient-container[data-alpha="true"]:after {
+	content: "";
+	width: 100%;
+	height: 100%;
+	background: url('images/canvas-pattern.png');
+	position: absolute;
+	z-index: -1;
+}
+
+/**
+ * 	Gradient Axis
+ */
+
+.gradient-axis {
+	width: 125%;
+	height: 4px;
+	margin: -3px 0 0 0;
+	border: 1px solid #CCC;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	opacity: 0.5;
+}
+
+.gradient-axis[data-active='true'] {
+	opacity: 1;
+	z-index: 1;
+}
+
+.gradient-axis:after {
+	content: "";
+	width: 25px;
+	height: 100%;
+	background-color: #CCC;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.gradient-axis .gradient-line {
+	width: 80%;
+	height: 100%;
+	margin: 0px auto;
+	position: relative;
+}
+
+.gradient-axis .gradient-line:hover {
+	cursor: pointer;
+}
+
+.gradient-axis .gradient-line:after,
+.gradient-axis .gradient-line:before {
+	content: "";
+	width: 1px;
+	height: 100px;
+	background-color: #CCC;
+	position: absolute;
+	top: -48px;
+}
+
+.gradient-axis .gradient-line:after {
+	left: -1px;
+}
+
+.gradient-axis .gradient-line:before {
+	right: -1px;
+}
+
+.gradient-axis .gradient-point {
+	width: 16px;
+	height: 16px;
+	margin: 0 0 0 -8px;
+	top: -7px;
+	border-radius: 50%;
+	background-color: #FFF;
+	border: 1px solid #999;
+	position: absolute;
+	z-index: 1;
+}
+
+.gradient-axis .gradient-point:after {
+	content: "";
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background-color: #FFF;
+	border: 1px solid #999;
+	position: absolute;
+	top: 4px;
+	left: 4px;
+}
+
+.gradient-axis .gradient-point:hover:after,
+.gradient-axis .gradient-point[data-active="true"]:after {
+	background-color: #CCC;
+}
+
+.gradient-axis .rotate-point {
+	width: 25px;
+	height: 25px;
+	position: absolute;
+	top: -10.5px;
+	right: -12px;
+}
+
+.gradient-axis[axisID='0']:after {
+	background-color: #DA5C5C;
+}
+
+.gradient-axis[axisID='1']:after {
+	background-color: #5CDA9B;
+}
+
+.gradient-axis[axisID='2']:after {
+	background-color: #5C9BDA;
+}
+
+.gradient-axis[axisID='3']:after {
+	background-color: #5C5CDA;
+}
+
+.gradient-axis[axisID='0'] path {
+	fill: #DA5C5C;
+}
+
+.gradient-axis[axisID='1'] path {
+	fill: #5CDA9B;
+}
+
+.gradient-axis[axisID='2'] path {
+	fill: #5C9BDA;
+}
+
+.gradient-axis[axisID='3'] path {
+	fill: #5C5CDA;
+}
+
+
+.gradient-axis .rotate-point:hover {
+	cursor: pointer;
+}
+
+/**
+ * Controls
+ */
+
+#controls {
+	width: 100%;
+	margin: 0 auto;
+	display: table;
+}
+
+#controls .section {
+	width: 50%;
+	padding: 10px;
+	display: table;
+	float: left;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#controls .section .title {
+	width: 90%;
+	margin: 0 0 10px 0;
+	padding: 5px;
+	border-bottom: 1px solid #DDD;
+	font-size: 18px;
+	color: #777;
+}
+
+#controls .property {
+	width: 100%;
+	height: 24px;
+	margin: 10px 0;
+	padding: 3px 0;
+	display: table;
+}
+
+#controls .property > * {
+	float: left;
+}
+
+#controls .property .name {
+	width: 90px;
+	padding: 0px 10px 0px 0px;
+	text-align: right;
+	line-height: 150%;
+}
+
+/* Button */
+
+#controls .button {
+	height: 24px;
+	padding: 0 10px;
+	background-color: #379B4A;
+	border-radius: 3px;
+	font-size: 14px;
+	color: #FFF;
+	display: inline;
+	float: left;
+}
+
+#controls .button[data-state='disabled'] {
+	background-color: #CCC !important;
+	color: #777 !important;
+}
+
+#controls .button[data-state='disabled']:hover {
+	background-color: #CCC !important;
+	cursor: default !important;
+}
+
+#controls .button:hover {
+	cursor: pointer;
+	background-color: #208B20;
+}
+
+/* Active Point  */
+
+.ui-input-slider {
+	height: 24px;
+	line-height: 20px;
+}
+
+#delete-point {
+	margin: 0 58px 0 0;
+	float: right !important;
+}
+
+#controls .ui-color-picker[data-topic="picker"] {
+	margin: 20px 0 0 0;
+}
+
+#controls .ui-input-slider[data-topic="axis-rotation"] {
+}
+
+#controls .ui-dropdown {
+	width: 130px;
+	height: 24px;
+}
+
+#controls .ui-dropdown-select {
+	line-height: 24px;
+}
+
+#controls .ui-dropdown-list {
+	height: 66px;
+	line-height: 2.5em;
+	overflow: hidden;
+}
+
+#delete-axis {
+	margin: 0 38px 0 0;
+	float: right !important;
+}
+
+/* Tool controls */
+
+#tool-section .property .name {
+	width: 150px;
+}
+
+#canvas-bg {
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+	background: url("images/toggle-background.png") center right no-repeat;
+}
+
+#canvas-bg:hover {
+	cursor: pointer;
+}
+
+#canvas-bg[data-alpha='false'] {
+	background-position: center left;
+}
+
+#canvas-bg[data-alpha='true'] {
+	background-position: center right;
+}
+
+/* Order gradients */
+
+#order {
+	margin-left: 24px;
+}
+
+#gradient-axes {
+	width: 100%;
+	height: 30px;
+	padding: 0 0 0 15px;
+	display: table;
+	position: relative;
+}
+
+#gradient-axes .axis {
+	width: 50px;
+	height: 20px;
+	margin: 5px 0;
+	background-color: #DDD;
+	text-align: center;
+	float: left;
+	transition: all 0.3s;
+	position: absolute;
+}
+
+#gradient-axes .axis:hover {
+	margin: 2px 0;
+	height: 26px;
+	background-color: #CCC;
+	cursor: pointer;
+}
+
+#gradient-axes .axis[data-state='active'] {
+	margin: 2px 0;
+	height: 26px;
+}
+
+#gradient-axes .axis[data-state='active']:after {
+	content: "*";
+	color: #FFF;
+	padding: 3px;
+}
+
+#gradient-axes .axis[axisID='0'] {
+	background-color: #DA5C5C;
+}
+
+#gradient-axes .axis[axisID='1'] {
+	background-color: #5CDA9B;
+}
+
+#gradient-axes .axis[axisID='2'] {
+	background-color: #5C9BDA;
+}
+
+#gradient-axes .axis[axisID='3'] {
+	background-color: #5C5CDA;
+}
+
+#add-axis.button {
+	margin: 0 38px 0 0;
+	float: right;
+}
+
+#gradient-order {
+	width: 60%;
+	height: 5px;
+	margin: 5px 0 0 0;
+	overflow: visible;
+	background-color: #CCC;
+	position: relative;
+}
+
+#gradient-order:before {
+	content: "gradient order - drag to order";
+	position: absolute;
+	top: 100%;
+	color: #CCC;
+}
+
+#gradient-order:after {
+	content: "";
+	width: 24px;
+	height: 24px;
+	background: url('images/arrow.svg');
+	background-size: 24px 24px;
+	position: absolute;
+	right: -10px;
+	top: -9.5px;
+}
+
+
+/**
+ * Output
+ */
+
+#output {
+	width: 100%;
+	padding: 10px 0;
+	margin: 20px 0 50px 0;
+	border: 2px dashed #CCC;
+	border-radius: 5px;
+	display: table;
+	font-size: 13px;
+	overflow: hidden;
+
+	-moz-user-select: text;
+	-webkit-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+#output .css-property {
+	width: 90%;
+	margin: 5px 5%;
+	color: #777;
+	position: relative;
+	float: left;
+}
+
+#output .property {
+	height: 100%;
+	width: 12%;
+	position: absolute;
+	left: 0;
+}
+
+#output .value {
+	width: 88%;
+	position: absolute;
+	white-space: pre;
+	word-wrap: break-word;
+	display: block;
+	right: 0;
+
+}

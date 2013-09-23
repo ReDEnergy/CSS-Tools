@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<title> Gradient generator Tool </title>
+	<link href="../../modules/ui-color-picker/ui-color-picker.css" rel="stylesheet"/>
+	<script src="../../modules/ui-color-picker/ui-color-picker.js"></script>
+
+	<link href="../../modules/ui-input-slider/ui-input-slider.css" rel="stylesheet"/>
+	<script src="../../modules/ui-input-slider/ui-input-slider.js"></script>
+
+	<link href="../../modules/ui-slider/ui-slider.css" rel="stylesheet"/>
+	<script src="../../modules/ui-slider/ui-slider.js"></script>
+
+	<link href="../../modules/ui-dropdown/ui-dropdown.css" rel="stylesheet"/>
+	<script src="../../modules/ui-dropdown/ui-dropdown.js"></script>
+
+	<link href="linear-gradient.css" rel="stylesheet"/>
+	<script src="linear-gradient.js"></script>
+
+</head>
+
+<body>
+	<div id="container">
+		<div id="gradient-container" data-alpha="true">
+		</div>
+
+		<div id="controls">
+			<div class="section">
+				<div class="title"> Active point </div>
+				<div class="property">
+				<div class="ui-input-slider" data-topic="point-position" data-info="position"
+					data-unit="px" data-min="-1000" data-value="0" data-max="1000" data-sensivity="5"></div>
+					<div id="delete-point" class="button"> delete point </div>
+				</div>
+				<div class="ui-color-picker" data-topic="picker"></div>
+			</div>
+
+			<div class="section">
+				<div class="title"> Active axis </div>
+				<div class="property">
+					<div class="name"> axis unit </div>
+					<div class="ui-dropdown" data-topic="axis-unit" data-selected="1">
+						<div data-value='px'> pixels (px) </div>
+						<div data-value='%'> percentage (%) </div>
+					</div>
+					<div id="delete-axis" class="button"> delete line </div>
+				</div>
+				<div class="property">
+					<div class="ui-slider" data-topic="axis-rotation" data-info="rotation"
+						data-min="-180" data-value="0" data-max="180"></div>
+				</div>
+			</div>
+
+			<div id="tool-section" class="section">
+				<div class="title"> Tool settings </div>
+				<div class="property">
+					<div class="name"> alpha background </div>
+					<div id="canvas-bg"></div>
+					<div id="add-axis" class="button"> add line </div>
+				</div>
+				<div id="order">
+					<div id="gradient-axes"></div>
+					<div id="gradient-order"></div>
+				</div>
+			</div>
+		</div>
+
+		<div id="output">
+			<div class="css-property">
+				<span class="property">background:</span>
+				<span class="value"></span>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
