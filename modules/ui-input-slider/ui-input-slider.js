@@ -1,10 +1,9 @@
-'use strict';
-
 /**
  * UI-SlidersManager
  */
 
 var InputSliderManager = (function InputSliderManager() {
+	'use strict';
 
 	var subscribers = {};
 	var sliders = [];
@@ -152,13 +151,13 @@ var InputSliderManager = (function InputSliderManager() {
 		setValue(topic, slider.value);
 	};
 
-	var setUnit = function setUnit(topic, unit) {
+	var setUnit = function setUnit(topic, unit, send_notify) {
 		var slider = sliders[topic];
 		if (slider === undefined)
 			return;
 
 		slider.unit = unit;
-		setValue(topic, slider.value);
+		setValue(topic, slider.value, send_notify);
 	};
 
 	var setStep = function setStep(topic, value) {
