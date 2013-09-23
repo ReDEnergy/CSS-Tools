@@ -1,17 +1,15 @@
-'use strict';
-
 /**
  * UI-DropDown Select
  */
 
 var DropDownManager = (function DropdownManager() {
+	'use strict';
 
 	var subscribers = {};
 	var dropdowns = [];
 	var active = null;
 
 	var visbility = ["hidden", "visible"];
-
 
 	var DropDown = function DropDown(node) {
 		var topic = node.getAttribute('data-topic');
@@ -81,15 +79,6 @@ var DropDownManager = (function DropdownManager() {
 
 	};
 
-	var clickOut = function clickOut(e) {
-		if (active.state === 0 ||
-			e.target === active.dropmenu ||
-			e.target === active.select)
-			return;
-
-		active.toggle(false);
-	};
-
 	DropDown.prototype.updateValue = function updateValue(e) {
 
 		if (Date.now() - this.time < 500)
@@ -111,6 +100,15 @@ var DropDownManager = (function DropdownManager() {
 		this.select.setAttribute('data-value', this.value['value']);
 
 		notify.call(this);
+	};
+
+	var clickOut = function clickOut(e) {
+		if (active.state === 0 ||
+			e.target === active.dropmenu ||
+			e.target === active.select)
+			return;
+
+		active.toggle(false);
 	};
 
 	var createDropDown = function createDropDown(topic, options) {
