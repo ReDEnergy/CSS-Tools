@@ -92,14 +92,15 @@ var DropDownManager = (function DropdownManager() {
 		this.time = Date.now();
 	};
 
-	DropDown.prototype.setNodeValue = function setNodeValue(node) {
+	DropDown.prototype.setNodeValue = function setNodeValue(node, send_notify) {
 		this.value['name'] = node.textContent;
 		this.value['value'] = node.getAttribute('data-value');
 
 		this.select.textContent = node.textContent;
 		this.select.setAttribute('data-value', this.value['value']);
 
-		notify.call(this);
+		if (send_notify !== false)
+			notify.call(this);
 	};
 
 	var clickOut = function clickOut(e) {
@@ -129,12 +130,12 @@ var DropDownManager = (function DropdownManager() {
 		return dropdown;
 	};
 
-	var setValue = function setValue(topic, index) {
+	var setValue = function setValue(topic, index, send_notify) {
 		if (dropdowns[topic] === undefined ||
 			index >= dropdowns[topic].dropmenu.children.length)
 			return;
 
-		dropdowns[topic].setNodeValue(dropdowns[topic].dropmenu.children[index]);
+		dropdowns[topic].setNodeValue(dropdowns[topic].dropmenu.children[index], send_notify);
 	};
 
 	var subscribe = function subscribe(topic, callback) {
