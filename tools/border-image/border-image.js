@@ -283,7 +283,7 @@ var BorderImage = (function BorderImage() {
 				}
 			}
 
-			ButtonManager.setValue('slice-fill', prop['fill']);
+			CheckBoxManager.setValue('slice-fill', prop['fill']);
 			DropDownManager.setValue('image-repeat-X', prop['repeat'][0]);
 			DropDownManager.setValue('image-repeat-Y', prop['repeat'][1]);
 			InputSliderManager.setValue('preview-width', prop['size'][0]);
@@ -819,9 +819,9 @@ var BorderImage = (function BorderImage() {
 
 			PreviewControl.init();
 
-			ButtonManager.subscribe('slice-fill',setBorderFill);
-			ButtonManager.subscribe('drag-subject', updateDragOption);
-			ButtonManager.setValue('drag-subject', false);
+			CheckBoxManager.subscribe('slice-fill',setBorderFill);
+			CheckBoxManager.subscribe('drag-subject', updateDragOption);
+			CheckBoxManager.setValue('drag-subject', false);
 
 			DropDownManager.subscribe('image-repeat-X', setBorderRepeat);
 			DropDownManager.subscribe('image-repeat-Y', setBorderRepeat);
@@ -848,7 +848,7 @@ var BorderImage = (function BorderImage() {
 	var init = function init() {
 		InputSliderManager.init();
 		DropDownManager.init();
-		ButtonManager.init();
+		CheckBoxManager.init();
 		UnitPanel.init();
 		Tool.init();
 		ImageControl.init();

@@ -185,7 +185,7 @@ var BorderRadius = (function BorderRadius() {
 		InputSliderManager.subscribe(this.topic + '-h', this.setHeight.bind(this));
 		InputSliderManager.subscribe(this.topic, this.setRadius.bind(this));
 
-		ButtonManager.subscribe(this.topic, function(value) {
+		CheckBoxManager.subscribe(this.topic, function(value) {
 			this.rounded = value;
 			if (value === true) {
 				unitW.container.style.display = 'none';
@@ -470,7 +470,7 @@ var BorderRadius = (function BorderRadius() {
 	 * Init Tool
 	 */
 	var init = function init() {
-		ButtonManager.init();
+		CheckBoxManager.init();
 		InputSliderManager.init();
 		PreviewMouseTracking.init("preview");
 		Tool.init();
