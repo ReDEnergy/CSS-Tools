@@ -539,7 +539,7 @@ var LinearGradientTool = (function LinearGradientTool() {
 	};
 
 	/**
-	 * AxesManager Manager
+	 * AxesManager
 	 */
 	var AxesManager = (function AxesManager() {
 
@@ -899,6 +899,4 @@ var LinearGradientTool = (function LinearGradientTool() {
 	};
 
 })();
-
-
 
