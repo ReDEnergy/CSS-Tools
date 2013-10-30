@@ -7,7 +7,7 @@ MDN CSS Generation Tools
   
 
 ### Implementation Details
-  Pure JavaScript
+  Pure JavaScript  
   Works on Firefox, Chrome, IE9+
 
 ### CSS Tools
