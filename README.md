@@ -2,12 +2,12 @@ MDN CSS Generation Tools
 ====
 
 ### Description
-  CSS Tools for Mozilla Developer Network  
-  Tools can be access from [MDN CSS Tools](https://developer.mozilla.org/en-US/docs/Web/CSS/Tools "CSS Tools")
-  
+  CSS Tools for Mozilla Developer Network
+  View on [MDN CSS Tools](https://developer.mozilla.org/en-US/docs/Web/CSS/Tools "CSS Tools")
+  Latest dev [here](http://redenergy.github.io/GSoC/ "CSS Tools")
 
 ### Implementation Details
-  Pure JavaScript  
+  Pure JavaScript
   Works on Firefox, Chrome, IE9+
 
 ### CSS Tools
@@ -16,18 +16,18 @@ MDN CSS Generation Tools
 ##### Drag and drop box-shadow generator
 * unlimited number of shadows
 * support 2 additional layers using :before and :after pseude-class
-    
+
 #### Border-radius
 
 #### Border-image
-  
+
 #### Advance ColorPicker
-#####  Create custom web colors  
+#####  Create custom web colors
 * support full web standard colors: HEXA, RGB or HSL
 * support for alpha channel
 * 2 picking modes : HSV/HSB and HSL
 * automatic generation of color palettes for: Hue, Staturation, Lightness/Value and Alpha
-    
+
 #### Linear-Gradient
 
 #### Radial-Gradient
@@ -41,11 +41,11 @@ MDN CSS Generation Tools
 * CSS3 2-state styled checkbox
 
 #### ui-dropdown
-* HTML dropdown styled using CSS3  
+* HTML dropdown styled using CSS3
 
 #### ui-slider
-* standard slider with min, max, step, snap, value 
+* standard slider with min, max, step, snap, value
 
 #### ui-input-slider
 * compact slider
-    
+
