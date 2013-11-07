@@ -1,0 +1,98 @@
+@charset "utf-8";
+/* CSS Document */
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: normal;
+    src: url("assets/fonts/OpenSans-Regular-webfont.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: bold;
+    src: url("assets/fonts/OpenSans-Semibold-webfont.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Open Sans Light";
+    font-style: normal;
+    font-weight: normal;
+    src: url("assets/fonts/OpenSans-Light-webfont.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: italic;
+    font-weight: normal;
+    src: url("assets/fonts/OpenSans-Italic-webfont.ttf") format("truetype");
+}
+
+/* ========================================================================== */
+
+body {
+	max-width: 960px;
+	margin: 0 auto;
+	background-color: #EBF1F5;
+	background-image: url("assets/grain_header.png"), url("assets/grain.png");
+	background-repeat: repeat-x, repeat;
+
+	font-size: 12px;
+	font-family: "Open Sans", "Segoe UI", Arial, Helvetica, sans-serif;
+
+}
+
+/* ========================================================================== */
+
+header {
+	height: 150px;
+	width: 960px;
+	margin: 50px auto;
+}
+
+
+#identity {
+	width: 860px;
+	margin: 0 auto;
+	height: inherit;
+	text-align: center;
+	font-family: "Open Sans Light", "Open Sans", Arial, Helvetica, sans-serif;
+	background-image: url("./assets/mdn.png");
+	background-position: left top;
+	background-repeat: no-repeat;
+	float: right;
+}
+
+#identity > div {
+	width: 100%;
+	padding: 0 0 0 20px;
+}
+
+#identity .title {
+	height: 80px;
+	font-size: 60px;
+}
+
+#identity .subtitle {
+	height: 60px;
+	font-size: 30px;
+}
+
+/* ========================================================================== */
+
+.tool {
+	width: 40%;
+	margin: 20px 5%;
+	padding: 20px 0;
+	font-size: 24px;
+	text-align: center;
+	float: left;
+	text-decoration: none;
+	transition: all 0.3s;
+}
+
+.tool:hover {
+	border-radius: 10px;
+	background-color: rgba(255, 255, 255, 0.3);
+}
