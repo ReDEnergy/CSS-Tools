@@ -1,4 +1,4 @@
-window.addEventListener("load", function() {
+﻿window.addEventListener("load", function() {
 	LinearGradientTool.init();
 });
 
@@ -666,8 +666,9 @@ var LinearGradientTool = (function LinearGradientTool() {
 			var idx = 0;
 			var len = lg_axes.length;
 
-			for (var i=0; i<len; i++)
+			for (var i=0; i<len; i++) {
 				ids[lg_axes[i].id] = true;
+			}
 
 			while (idx < lg_axes.length) {
 				if (ids[idx] !== true)
@@ -680,9 +681,11 @@ var LinearGradientTool = (function LinearGradientTool() {
 
 		var getOrderID = function getOrderID(axisID) {
 			var len = lg_axes.length;
-			for (var i=0; i<len; i++)
-				if (lg_axes[i].id == axisID)
+			for (var i=0; i<len; i++) {
+				if (lg_axes[i].id == axisID) {
 					return i;
+				}
+			}
 		};
 
 		var activateAxis = function activateAxis(axisID) {
@@ -739,8 +742,9 @@ var LinearGradientTool = (function LinearGradientTool() {
 				updateCSSGradient();
 
 				var len = lg_axes.length;
-				for (var i=0; i<len; i++)
+				for (var i=0; i<len; ++i) {
 					lg_axes[i].Shortcut.style.left = 60 * i + 'px';
+				}
 
 				this.setAttribute('data-state', 'disabled');
 				if (lg_axes.length < 4)
@@ -779,14 +783,16 @@ var LinearGradientTool = (function LinearGradientTool() {
 
 		var resizeContainer = function resizeContainer() {
 			var len = lg_axes.length;
-			for(var i = 0; i < len; i++)
+			for(var i = 0; i < len; i++) {
 				lg_axes[i].updateOnResize();
+			}
 		};
 
 		var resizeEnd = function resizeEnd() {
 			var len = lg_axes.length;
-			for(var i = 0; i < len; i++)
+			for(var i = 0; i < len; i++) {
 				lg_axes[i].updateAbsolutePosition();
+			}
 		};
 
 		/* General functions */
