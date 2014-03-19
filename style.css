@@ -81,6 +81,13 @@ header {
 
 /* ========================================================================== */
 
+.container {
+	width: 100%;
+	border: 1px solid #CCC;
+	margin 20px 0;
+	display: inline-block;
+}
+
 .tool {
 	width: 40%;
 	margin: 20px 5%;
