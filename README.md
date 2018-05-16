@@ -1,14 +1,12 @@
-MDN CSS Generation Tools
+CSS Tools
 ====
 
 ### Description
-  CSS Tools for Mozilla Developer Network
-  View on [MDN CSS Tools](https://developer.mozilla.org/en-US/docs/Web/CSS/Tools "CSS Tools")  
-  View latest dev versions [here](http://redenergy.github.io/CSS-Tools/ "CSS Tools")
+  View tools [here](http://redenergy.github.io/CSS-Tools/ "CSS Tools")
 
 ### Implementation Details
   Pure JavaScript
-  Works on Firefox, Chrome, IE9+
+  Works on Firefox, Chrome, Safary, Edge, IE9+
 
 ### CSS Tools
 
